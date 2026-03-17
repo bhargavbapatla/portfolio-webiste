@@ -1,221 +1,157 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
-import { ArrowRight, Download } from "lucide-react";
-import { NeuralBackground } from "./NeuralBackground";
-
-// Magnetic Button Wrapper
-function MagneticButton({ children, className, href, style }: { children: React.ReactNode, className?: string, href?: string, style?: any }) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springConfig = { damping: 15, stiffness: 150 };
-  const x = useSpring(mouseX, springConfig);
-  const y = useSpring(mouseY, springConfig);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const { clientX, clientY, currentTarget } = e;
-    const { left, top, width, height } = currentTarget.getBoundingClientRect();
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
-    mouseX.set((clientX - centerX) * 0.4);
-    mouseY.set((clientY - centerY) * 0.4);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
-  return (
-    <motion.a
-      href={href}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ x, y, ...style }}
-      className={className}
-    >
-      {children}
-    </motion.a>
-  );
-}
-
-// Stagger container variants
-const container = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as any } },
-};
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { ArrowDownRight } from "lucide-react";
 
 export function Hero() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const containerRef = useRef<HTMLElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const yParallax = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+  const opacityFade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  useEffect(() => {
+    // Hold the loading screen for 1.2 seconds
+    const timer = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // This specific bezier curve is the industry standard for a heavy, cinematic glide
+  const transitionEase = [0.76, 0, 0.24, 1];
 
   return (
-    <section
-      id="home"
-      ref={ref}
-      className="relative flex min-h-screen flex-col justify-end overflow-hidden px-8 pb-24 pt-32"
-    >
-      {/* ── Background ──────────────────────────── */}
-      <div className="absolute inset-0 z-0">
-        <NeuralBackground />
+    <section ref={containerRef} className="relative h-screen w-full bg-[#050505] overflow-hidden">
 
-        {/* Grid */}
-        <div
-          className="absolute inset-0"
+      {/* 1. The Preloader (Flies TOWARD the camera) */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            key="preloader"
+            exit={{
+              opacity: 0,
+              scale: 1.5, // Scales up to simulate flying past the user
+            }}
+            transition={{ duration: 1.4, ease: transitionEase }}
+            // will-change and transform-gpu force the graphics card to handle this layer
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#050505] transform-gpu origin-center"
+            style={{ willChange: "transform, opacity" }}
+          >
+            <motion.div
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.8, ease: transitionEase }}
+              className="font-mono text-[11px] tracking-[0.4em] text-white/50 uppercase transform-gpu"
+            >
+              Initiating Sequence...
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 2. The Background Landing (Drops INTO place) */}
+      <motion.div
+        initial={{ scale: 1.1, opacity: 0 }}
+        // Scales down from 1.1 to 1.0 as the preloader flies past
+        animate={isLoading ? { scale: 1.1, opacity: 0 } : { scale: 1, opacity: 1 }}
+        transition={{ duration: 1.8, ease: transitionEase }}
+        style={{ y: yParallax, opacity: opacityFade, willChange: "transform, opacity" }}
+        className="absolute inset-0 z-0 transform-gpu"
+      >
+        <div className="absolute inset-0 opacity-40 mix-blend-screen"
           style={{
-            backgroundImage:
-              "linear-gradient(rgba(0,255,170,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,170,0.03) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-            maskImage:
-              "radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent)",
+            background: `
+              radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+              radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.04) 0%, transparent 50%)
+            `,
           }}
         />
-        {/* Orbs */}
-        <motion.div
-          style={{ y }}
-          className="absolute -top-32 right-0 h-[600px] w-[600px] rounded-full bg-[#00ffaa]/10 blur-[120px]"
+        {/* We keep the SVG grain static to prevent rendering jank during the animation */}
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }}
         />
-        <motion.div
-          style={{ y }}
-          className="absolute top-1/2 -left-48 h-[400px] w-[400px] rounded-full bg-violet-500/15 blur-[120px]"
-        />
-      </div>
-
-      {/* ── Content ─────────────────────────────── */}
-      <motion.div
-        style={{ opacity }}
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 max-w-7xl"
-      >
-        {/* Eyebrow */}
-        <motion.div variants={item} className="mb-8 flex items-center gap-4">
-          <div className="h-px w-10 bg-[#00ffaa]" />
-          <span className="font-mono text-xs tracking-[0.3em] uppercase text-[#00ffaa]">
-            Software Engineer · Frontend & AI
-          </span>
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          variants={item}
-          className="font-display text-[clamp(56px,11vw,160px)] font-black leading-[0.9] tracking-tight text-white mb-6"
-          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-        >
-          {["Crafting", "Interfaces", "That", "Live."].map((word, i) => (
-            <span key={i} className="inline-block mr-[0.2em] overflow-hidden align-bottom">
-              <motion.span
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                transition={{
-                  duration: 0.8,
-                  delay: 0.3 + i * 0.1,
-                  ease: [0.22, 1, 0.36, 1]
-                }}
-                className={i === 1 ? "text-transparent inline-block" : "inline-block"}
-                style={i === 1 ? { WebkitTextStroke: "1px rgba(255,255,255,0.18)" } : i === 2 ? {
-                  background: "linear-gradient(90deg, #00ffaa, #7b5cff)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                } : {}}
-              >
-                {word}
-              </motion.span>
-              {i === 1 && <br />}
-            </span>
-          ))}
-        </motion.h1>
-
-        {/* Subtext + CTA row */}
-        <motion.div
-          variants={item}
-          className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between"
-        >
-          <p
-            className="max-w-lg font-mono text-sm leading-relaxed text-white/40"
-            style={{ fontFamily: "'DM Mono', monospace" }}
-          >
-            Software Engineer with 3+ years building scalable frontends,
-            LLM integrations, and agentic AI systems. Based in Pune, India —
-            building for the world.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-6">
-            <MagneticButton
-              href="#projects"
-              className="group relative flex items-center gap-3 overflow-hidden bg-[#00ffaa] px-8 py-5 font-mono text-xs font-semibold uppercase tracking-widest text-black transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,255,170,0.4)]"
-              style={{
-                clipPath:
-                  "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
-              }}
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                View Work
-                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-              </span>
-            </MagneticButton>
-
-            <MagneticButton
-              href="/resume.pdf"
-              className="group flex items-center gap-3 border border-white/10 bg-white/5 backdrop-blur-sm px-8 py-5 font-mono text-xs font-semibold uppercase tracking-widest text-white/60 transition-all duration-300 hover:border-white/30 hover:text-white"
-              style={{
-                clipPath:
-                  "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
-              }}
-            >
-              <Download className="h-3.5 w-3.5" />
-              Resume
-            </MagneticButton>
-          </div>
-        </motion.div>
-
-        {/* Stats row */}
-        <motion.div
-          variants={item}
-          className="mt-20 flex items-center gap-12 border-t border-white/5 pt-10"
-        >
-          {[
-            { num: "3+", label: "Years Exp" },
-            { num: "10+", label: "Projects" },
-            { num: "60%", label: "Perf Gains" },
-            { num: "98", label: "Lighthouse" },
-          ].map((s, i) => (
-            <div key={s.label} className="flex flex-col gap-1">
-              <span
-                className="font-display text-4xl font-black text-white leading-none"
-                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-              >
-                {s.num}
-              </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
-                {s.label}
-              </span>
-            </div>
-          ))}
-
-          <div className="ml-auto flex items-center gap-3 text-white/20">
-            <div className="h-px w-8 bg-white/10" />
-            <span className="font-mono text-[10px] tracking-[0.2em] uppercase">
-              Scroll
-            </span>
-            <div className="flex flex-col gap-[3px]">
-              <div className="h-[18px] w-px bg-gradient-to-b from-[#00ffaa] to-transparent mx-auto animate-pulse" />
-            </div>
-          </div>
-        </motion.div>
       </motion.div>
+
+      {/* 3. The Main UI Content */}
+      <div className="relative z-10 flex h-full flex-col justify-between p-6 md:p-12 lg:p-16">
+
+        {/* Top Header Row */}
+        <div className="flex justify-between items-start overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={isLoading ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: transitionEase, delay: 0.2 }}
+            className="font-mono text-[10px] tracking-[0.2em] text-white/50 uppercase transform-gpu"
+          >
+            Krishnabhargav Bapatla <br />
+            Pune, India
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={isLoading ? { opacity: 0, y: -20 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: transitionEase, delay: 0.3 }}
+            className="text-right font-mono text-[10px] tracking-[0.2em] text-white/50 uppercase transform-gpu"
+          >
+            Availability <br />
+            <span className="text-white">Active</span>
+          </motion.div>
+        </div>
+
+        {/* Center Typography */}
+        <div className="w-full">
+          {/* pb-4 prevents descender clipping (like the bottom of a 'g') */}
+          <div className="overflow-hidden mb-2 pb-4">
+            <motion.h1
+              initial={{ y: "100%", opacity: 0 }}
+              // Removed rotation to ensure pixel-perfect text rendering during animation
+              animate={isLoading ? { y: "100%", opacity: 0 } : { y: "0%", opacity: 1 }}
+              transition={{ duration: 1.2, ease: transitionEase, delay: 0.1 }}
+              className="font-serif text-[clamp(50px,10vw,160px)] font-light leading-[0.85] tracking-tight text-white transform-gpu"
+              style={{ willChange: "transform, opacity" }}
+            >
+              Software Engineer
+            </motion.h1>
+          </div>
+          <div className="overflow-hidden flex items-center gap-6 pb-4">
+            <motion.h1
+              initial={{ y: "100%", opacity: 0 }}
+              animate={isLoading ? { y: "100%", opacity: 0 } : { y: "0%", opacity: 1 }}
+              transition={{ duration: 1.2, ease: transitionEase, delay: 0.2 }}
+              className="font-sans text-[clamp(40px,8vw,140px)] font-bold leading-[0.85] tracking-tighter text-white/80 transform-gpu"
+              style={{ willChange: "transform, opacity" }}
+            >
+              <span className="italic font-serif font-light text-white">Gen</span>AI Systems.
+            </motion.h1>
+          </div>
+        </div>
+
+        {/* Bottom Details Row */}
+        <div className="flex flex-col md:flex-row justify-between items-end gap-12 border-t border-white/10 pt-8 overflow-hidden">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={isLoading ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: transitionEase, delay: 0.4 }}
+            className="max-w-md font-sans text-sm font-light leading-relaxed text-white/60 transform-gpu"
+          >
+            With over 3 years of experience orchestrating scalable platforms and agentic AI workflows. Designing the architecture where data meets elegant interfaces.
+          </motion.p>
+
+          <motion.a
+            href="#projects"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isLoading ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, ease: transitionEase, delay: 0.5 }}
+            className="group flex h-24 w-24 items-center justify-center rounded-full border border-white/20 bg-white/5 transition-colors hover:bg-white hover:text-black transform-gpu"
+          >
+            <span className="sr-only">Scroll Down</span>
+            <ArrowDownRight className="h-6 w-6 transition-transform duration-500 group-hover:rotate-[-45deg]" />
+          </motion.a>
+        </div>
+      </div>
     </section>
   );
 }

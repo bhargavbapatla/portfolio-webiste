@@ -1,56 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
 const skillGroups = [
   {
-    category: "Frontend",
-    color: "#00ffaa",
-    items: [
-      { name: "React.js", level: 95 },
-      { name: "TypeScript", level: 92 },
-      { name: "Next.js", level: 88 },
-      { name: "Tailwind CSS", level: 90 },
-      { name: "Framer Motion", level: 82 },
-      { name: "React Native", level: 80 },
-    ],
+    category: "Frontend Architecture",
+    items: ["React.js", "TypeScript", "Next.js", "Tailwind CSS", "Framer Motion", "React Native"],
   },
   {
-    category: "AI & Backend",
-    color: "#7b5cff",
-    items: [
-      { name: "LangChain / LangGraph", level: 85 },
-      { name: "Node.js / Express", level: 88 },
-      { name: "FastAPI / Django", level: 80 },
-      { name: "RAG Pipelines", level: 82 },
-      { name: "n8n Workflows", level: 78 },
-      { name: "Google Gemini LLM", level: 83 },
-    ],
+    category: "AI & Backend Systems",
+    items: ["LangChain / LangGraph", "Node.js / Express", "FastAPI / Django", "RAG Pipelines", "n8n Workflows", "Google Gemini LLM"],
   },
   {
-    category: "Data & Infra",
-    color: "#ff4d6d",
-    items: [
-      { name: "PostgreSQL", level: 85 },
-      { name: "Redis", level: 78 },
-      { name: "MongoDB / Firebase", level: 80 },
-      { name: "Pinecone / ChromaDB", level: 75 },
-      { name: "Docker", level: 76 },
-      { name: "Cube.js Analytics", level: 80 },
-    ],
+    category: "Data & Infrastructure",
+    items: ["PostgreSQL", "Redis", "MongoDB / Firebase", "Pinecone / ChromaDB", "Docker", "Cube.js Analytics"],
   },
   {
-    category: "Tools & More",
-    color: "#ffb830",
-    items: [
-      { name: "Git / GitHub", level: 92 },
-      { name: "TensorFlow / Keras", level: 78 },
-      { name: "Stripe Integration", level: 82 },
-      { name: "Twilio / WhatsApp API", level: 80 },
-      { name: "Cursor / Claude Code", level: 88 },
-      { name: "Figma", level: 75 },
-    ],
+    category: "Tools & Integrations",
+    items: ["Git / GitHub", "TensorFlow / Keras", "Stripe Integration", "Twilio / WhatsApp API", "Cursor / Claude Code", "Figma"],
   },
 ];
 
@@ -61,145 +29,100 @@ const marqueeWords = [
 ];
 
 export function Skills() {
-  const [activeGroup, setActiveGroup] = useState(0);
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-10%" });
+  const transitionEase = [0.76, 0, 0.24, 1];
 
   return (
-    <section id="skills" className="relative overflow-hidden py-40 px-8">
-      {/* top divider */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-px w-full -translate-x-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <section id="skills" ref={ref} className="relative py-32 bg-[#050505] overflow-hidden">
+      <div className="mx-auto max-w-7xl px-6 lg:px-12">
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        {/* Label */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="mb-20 flex items-center gap-4"
-        >
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#00ffaa]">
-            04 — Skills
-          </span>
-          <div className="h-px flex-1 bg-white/5 max-w-xs" />
-        </motion.div>
+        {/* Section Header */}
+        <div className="mb-24 flex items-center justify-between border-b border-white/10 pb-6">
+          <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-white/40">04 // Capabilities</span>
+        </div>
 
-        {/* Heading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16 text-[clamp(40px,6vw,80px)] font-black leading-[0.92] tracking-tight text-white"
-          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-        >
-          Technical
-          <br />
-          <span
-            className="text-transparent"
-            style={{ WebkitTextStroke: "1px rgba(255,255,255,0.13)" }}
-          >
-            Arsenal
-          </span>
-        </motion.h2>
+        <div className="grid gap-20 lg:grid-cols-12 lg:gap-8">
 
-        {/* Tab selector */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-12 flex flex-wrap gap-2"
-        >
-          {skillGroups.map((g, i) => (
-            <button
-              key={g.category}
-              onClick={() => setActiveGroup(i)}
-              className="relative px-5 py-2.5 font-mono text-xs uppercase tracking-widest transition-all duration-300"
-              style={{
-                color: activeGroup === i ? "#000" : "rgba(255,255,255,0.3)",
-                clipPath:
-                  "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
-                background:
-                  activeGroup === i ? g.color : "rgba(255,255,255,0.03)",
-                border: activeGroup === i ? "none" : "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              {g.category}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* Skill bars panel */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeGroup}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.35 }}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {skillGroups[activeGroup].items.map((skill, i) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="group border border-white/5 bg-white/[0.015] p-5 transition-colors duration-300 hover:border-white/10"
-                style={{
-                  clipPath:
-                    "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))",
-                }}
+          {/* Left Side: Sticky Header */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-32 overflow-hidden">
+              <motion.h2
+                initial={{ y: "100%" }}
+                animate={isInView ? { y: "0%" } : { y: "100%" }}
+                transition={{ duration: 1.2, ease: transitionEase }}
+                className="text-[clamp(40px,5vw,80px)] font-light leading-[0.9] tracking-tighter text-white"
               >
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="font-mono text-xs text-white/70 group-hover:text-white transition-colors duration-300">
-                    {skill.name}
-                  </span>
-                  <span
-                    className="font-mono text-[10px]"
-                    style={{ color: skillGroups[activeGroup].color }}
-                  >
-                    {skill.level}%
-                  </span>
-                </div>
-                <div className="h-[2px] w-full bg-white/5">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${skill.level}%` }}
-                    transition={{ duration: 0.9, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                    className="h-full"
-                    style={{
-                      background: `linear-gradient(90deg, ${skillGroups[activeGroup].color}, ${skillGroups[activeGroup].color}80)`,
-                    }}
-                  />
+                Technical <br />
+                <span className="font-serif italic text-white/60">Arsenal.</span>
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 1, delay: 0.4 }}
+                className="mt-8 max-w-sm font-sans text-sm font-light leading-relaxed text-white/50"
+              >
+                A curated selection of frameworks, languages, and tools utilized to engineer scalable systems and intelligent interfaces.
+              </motion.p>
+            </div>
+          </div>
+
+          {/* Right Side: Brutalist Grid */}
+          <div className="lg:col-span-7 flex flex-col pt-4">
+            {skillGroups.map((group, groupIdx) => (
+              <motion.div
+                key={group.category}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: groupIdx * 0.15, ease: transitionEase }}
+                className="mb-12 last:mb-0"
+              >
+                <h3 className="mb-6 font-mono text-xs uppercase tracking-[0.2em] text-white">
+                  {group.category}
+                </h3>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4 border-t border-white/10 pt-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.items.map((item, i) => (
+                    <div key={i} className="font-sans text-sm font-light text-white/60 hover:text-white transition-colors">
+                      {item}
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             ))}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Marquee */}
-        <div className="relative mt-24 overflow-hidden border-t border-b border-white/5 py-6">
-          <div className="flex gap-12 whitespace-nowrap"
-            style={{ animation: "marquee 28s linear infinite" }}
-          >
-            {[...marqueeWords, ...marqueeWords].map((word, i) => (
-              <span
-                key={i}
-                className="flex items-center gap-12 font-mono text-xs uppercase tracking-[0.3em] text-white/15"
-              >
-                {word}
-                <span className="text-[#00ffaa]/30">◆</span>
-              </span>
-            ))}
           </div>
-          <style>{`
-            @keyframes marquee {
-              from { transform: translateX(0); }
-              to { transform: translateX(-50%); }
-            }
-          `}</style>
         </div>
       </div>
+
+      {/* Elegant Marquee */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 1, delay: 0.6 }}
+        className="relative mt-32 overflow-hidden border-t border-b border-white/10 py-6 bg-[#0a0a0a]"
+      >
+        <div
+          className="flex gap-16 whitespace-nowrap"
+          style={{ animation: "marquee 40s linear infinite" }}
+        >
+          {/* Tripled the array for smooth infinite scrolling on ultrawide monitors */}
+          {[...marqueeWords, ...marqueeWords, ...marqueeWords].map((word, i) => (
+            <span
+              key={i}
+              className="flex items-center gap-16 font-mono text-[11px] uppercase tracking-[0.3em] text-white/30"
+            >
+              {word}
+              {/* Replacing the old diamond with a sleek, minimalist slash */}
+              <span className="font-light text-white/10">/</span>
+            </span>
+          ))}
+        </div>
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-33.33%); }
+          }
+        `}</style>
+      </motion.div>
     </section>
   );
 }

@@ -1,208 +1,144 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { ExternalLink, Github, ArrowUpRight } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowUpRight, Github } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const projects = [
   {
     num: "01",
-    title: "Pantry Pilot",
-    category: "Full-Stack SaaS · AI",
+    title: "Nutrimind",
+    category: "AI · HealthTech",
     description:
-      "A full-stack monorepo SaaS platform for home-based bakery businesses to manage inventory, orders, and fulfillment. Features Sous Chef AI — an agentic voice assistant powered by Google Gemini LLM & ElevenLabs TTS that executes live DB transactions through natural language.",
-    tags: ["React.js", "TypeScript", "Node.js", "PostgreSQL", "Gemini LLM", "ElevenLabs"],
-    color: "#00ffaa",
+      "A personalized diet recommendation system powered by Agentic AI. Engineered to dynamically analyze nutritional requirements and generate tailored meal plans using state-of-the-art LLMs.",
+    tags: ["Generative AI", "React", "TypeScript", "Prompt Engineering"],
     link: "#",
     github: "#",
   },
   {
     num: "02",
-    title: "Low-Code / No-Code SaaS",
-    category: "Enterprise Platform · Invimatic",
+    title: "Low-Code Enterprise SaaS",
+    category: "Architecture · Frontend",
     description:
-      "Spearheaded the frontend architecture of a production SaaS platform using React.js and TypeScript with PWA capabilities. Built real-time chat and live-tracking via Webhooks and Redis — replacing API polling and cutting server requests by 60% with sub-200ms latency.",
-    tags: ["React.js", "TypeScript", "Redis", "Webhooks", "PWA", "Cube.js"],
-    color: "#7b5cff",
+      "Spearheaded the frontend architecture using React.js and TypeScript. Built real-time synchronization via Webhooks and Redis, cutting server requests by 60% with sub-200ms latency.",
+    tags: ["React", "Redis", "Cube.js", "Webhooks"],
     link: "#",
     github: "#",
   },
   {
     num: "03",
-    title: "Image Classification · Vision Transformer",
-    category: "ML Research · Computer Vision",
+    title: "Automated Workflow Engine",
+    category: "Automation · n8n",
     description:
-      "Achieved 89.87% accuracy on CIFAR-100 (100-class dataset) by implementing a custom CNN and benchmarking it against a fine-tuned Vision Transformer (ViT). Applied self-attention mechanisms from NLP to image classification for long-range dependency modeling.",
-    tags: ["TensorFlow", "Keras", "ViT", "NumPy", "CIFAR-100", "Python"],
-    color: "#ff4d6d",
+      "Architected an end-to-end n8n workflow for dynamic CV generation and evaluation. Leveraged Gemini LLMs to evaluate resumes against job descriptions and track data via Google Sheets APIs.",
+    tags: ["n8n", "Gemini API", "Automation", "Google Sheets API"],
+    link: "#",
+    github: "#",
+  },
+  {
+    num: "04",
+    title: "Vision Transformer Classification",
+    category: "Machine Learning",
+    description:
+      "Achieved 89.87% accuracy on the CIFAR-100 dataset. Implemented a custom CNN architecture benchmarked against a fine-tuned Vision Transformer, applying NLP self-attention to image classification.",
+    tags: ["TensorFlow", "Keras", "ViT", "Python"],
     link: "#",
     github: "#",
   },
 ];
 
 export function Projects() {
-  const [hovered, setHovered] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const ref = useRef<HTMLElement>(null);
+  const transitionEase = [0.76, 0, 0.24, 1];
 
   return (
-    <section id="projects" ref={ref} className="relative py-40 px-8">
-      {/* Ambient */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-px w-full -translate-x-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <section id="projects" ref={ref} className="relative py-32 px-6 lg:px-12 bg-[#050505]">
+      <div className="mx-auto max-w-7xl">
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        {/* Section label */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="mb-20 flex items-center gap-4"
-        >
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#00ffaa]">
-            03 — Work
-          </span>
-          <div className="h-px flex-1 bg-white/5 max-w-xs" />
-        </motion.div>
+        {/* Section Header */}
+        <div className="mb-20 flex items-center justify-between border-b border-white/10 pb-6">
+          <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-white/40">02 // Selected Works</span>
+        </div>
 
-        {/* Heading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-20 text-[clamp(40px,6vw,80px)] font-black leading-[0.92] tracking-tight text-white"
-          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-        >
-          Selected
-          <br />
-          <span
-            className="text-transparent"
-            style={{ WebkitTextStroke: "1px rgba(255,255,255,0.13)" }}
+        {/* Large Typography Title */}
+        <div className="mb-24 overflow-hidden pb-6">
+          <motion.h2
+            initial={{ y: "100%" }}
+            whileInView={{ y: "0%" }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: transitionEase }}
+            className="text-[clamp(40px,7vw,110px)] font-light leading-[0.85] tracking-tighter text-white"
           >
-            Projects
-          </span>
-        </motion.h2>
+            Digital <span className="font-serif italic text-white/60">Craft.</span>
+          </motion.h2>
+        </div>
 
-        {/* Project list */}
-        <div className="flex flex-col divide-y divide-white/5 border-t border-white/5">
-          {projects.map((p, i) => (
-            <motion.div
-              key={p.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-              className="group relative grid cursor-default grid-cols-[64px_1fr_auto] items-start gap-8 py-10 transition-all duration-300 md:grid-cols-[64px_1fr_240px_auto]"
-            >
-              {/* Left accent bar */}
-              <div
-                className="absolute left-0 top-0 bottom-0 w-[2px] origin-top scale-y-0 transition-transform duration-500 group-hover:scale-y-100"
-                style={{ background: p.color }}
-              />
+        {/* The List */}
+        <div className="flex flex-col border-t border-white/10">
+          {projects.map((p, i) => {
+            const isHovered = hoveredIndex === i;
+            const isDimmed = hoveredIndex !== null && hoveredIndex !== i;
 
-              {/* Number */}
-              <span
-                className="font-display text-5xl font-black leading-none transition-colors duration-300"
-                style={{
-                  fontFamily: "'Bebas Neue', sans-serif",
-                  color: hovered === i ? `${p.color}20` : "rgba(255,255,255,0.06)",
-                }}
+            return (
+              <motion.div
+                key={p.num}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: i * 0.1, ease: transitionEase }}
+                onMouseEnter={() => setHoveredIndex(i)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                className={cn(
+                  "group relative grid grid-cols-1 items-start gap-8 border-b border-white/10 py-12 transition-opacity duration-500 lg:grid-cols-[100px_1fr_1fr_auto]",
+                  isDimmed ? "opacity-30" : "opacity-100"
+                )}
               >
-                {p.num}
-              </span>
+                {/* Number */}
+                <div className="font-mono text-sm tracking-widest text-white/40">
+                  {p.num}
+                </div>
 
-              {/* Body */}
-              <div className="min-w-0">
-                <div className="mb-2 flex flex-wrap gap-2">
-                  <span
-                    className="font-mono text-[10px] uppercase tracking-[0.2em]"
-                    style={{ color: p.color }}
-                  >
+                {/* Title & Category */}
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-sans text-3xl font-light tracking-tight text-white lg:text-4xl">
+                    {p.title}
+                  </h3>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
                     {p.category}
                   </span>
                 </div>
-                <h3
-                  className="text-3xl font-black tracking-tight text-white transition-colors duration-300 group-hover:text-white md:text-4xl"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
-                  {p.title}
-                </h3>
-                <p className="mt-3 max-w-xl font-mono text-xs leading-[2] text-white/35">
-                  {p.description}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {p.tags.map((t) => (
-                    <span
-                      key={t}
-                      className="border border-white/8 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-white/35 transition-colors duration-300 group-hover:border-white/15 group-hover:text-white/50"
-                    >
-                      {t}
-                    </span>
-                  ))}
+
+                {/* Description & Tags */}
+                <div className="flex max-w-sm flex-col gap-6">
+                  <p className="font-sans text-sm font-light leading-relaxed text-white/50">
+                    {p.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {p.tags.map((tag) => (
+                      <span key={tag} className="rounded-full border border-white/10 px-3 py-1 font-mono text-[9px] uppercase tracking-widest text-white/40">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Description — visible on hover for md+ */}
-              <div className="hidden md:block" />
-
-              {/* Links */}
-              <div className="flex flex-col items-end gap-3 pt-1">
-                <a
-                  href={p.link}
-                  className="group/link flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/30 transition-colors duration-200 hover:text-white"
-                >
-                  <span>Live</span>
-                  <ArrowUpRight className="h-3 w-3 transition-transform duration-200 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
-                </a>
-                <a
-                  href={p.github}
-                  className="group/link flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/30 transition-colors duration-200 hover:text-white"
-                >
-                  <span>GitHub</span>
-                  <Github className="h-3 w-3" />
-                </a>
-              </div>
-
-              {/* Hover glow */}
-              <AnimatePresence>
-                {hovered === i && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="pointer-events-none absolute inset-0"
-                    style={{
-                      background: `linear-gradient(to right, ${p.color}05, transparent)`,
-                    }}
-                  />
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
+                {/* Actions */}
+                <div className="flex items-center gap-6 pt-2 lg:flex-col lg:items-end lg:pt-0">
+                  <a href={p.link} className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/40 transition-colors hover:text-white">
+                    <span>View</span>
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
+                  </a>
+                  <a href={p.github} className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-white/40 transition-colors hover:text-white">
+                    <span>Source</span>
+                    <Github className="h-4 w-4" />
+                  </a>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-16 flex justify-end"
-        >
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-white/30 transition-colors duration-300 hover:text-[#00ffaa]"
-          >
-            All Projects on GitHub
-            <span className="flex h-8 w-8 items-center justify-center border border-white/10 transition-all duration-300 group-hover:border-[#00ffaa]/40">
-              <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </span>
-          </a>
-        </motion.div>
       </div>
     </section>
   );

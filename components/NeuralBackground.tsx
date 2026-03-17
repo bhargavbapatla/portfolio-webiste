@@ -2,128 +2,120 @@
 
 import { useEffect, useRef } from "react";
 
-interface Node {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  size: number;
-}
-
 export function NeuralBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let animationFrameId: number;
-    let nodes: Node[] = [];
-    const nodeCount = 60;
-    const connectionDistance = 150;
-    const mouseDistance = 200;
+    let particles: Particle[] = [];
+    const particleCount = 120;
+    const mouse = { x: -100, y: -100, radius: 150 };
 
-    const resize = () => {
+    class Particle {
+      x: number; y: number; baseX: number; baseY: number;
+      size: number; density: number;
+
+      constructor(x: number, y: number) {
+        this.x = x; this.y = y;
+        this.baseX = x; this.baseY = y;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.density = (Math.random() * 30) + 1;
+      }
+
+      draw() {
+        ctx!.fillStyle = "rgba(255, 255, 255, 0.4)";
+        ctx!.beginPath();
+        ctx!.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx!.closePath();
+        ctx!.fill();
+      }
+
+      update() {
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        let forceDirectionX = dx / distance;
+        let forceDirectionY = dy / distance;
+        let maxDistance = mouse.radius;
+        let force = (maxDistance - distance) / maxDistance;
+        let directionX = forceDirectionX * force * this.density;
+        let directionY = forceDirectionY * force * this.density;
+
+        if (distance < mouse.radius) {
+          this.x -= directionX;
+          this.y -= directionY;
+        } else {
+          if (this.x !== this.baseX) {
+            let dx = this.x - this.baseX;
+            this.x -= dx / 10;
+          }
+          if (this.y !== this.baseY) {
+            let dy = this.y - this.baseY;
+            this.y -= dy / 10;
+          }
+        }
+      }
+    }
+
+    const init = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      initNodes();
-    };
-
-    const initNodes = () => {
-      nodes = [];
-      for (let i = 0; i < nodeCount; i++) {
-        nodes.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 2 + 1,
-        });
+      particles = [];
+      // Create a grid of points that look like a mesh
+      for (let y = 0; y < canvas.height; y += 40) {
+        for (let x = 0; x < canvas.width; x += 40) {
+          particles.push(new Particle(x, y));
+        }
       }
     };
 
-    const draw = () => {
+    const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].draw();
+        particles[i].update();
+      }
+      connect();
+      animationFrameId = requestAnimationFrame(animate);
+    };
 
-      // Update and draw nodes
-      nodes.forEach((node, i) => {
-        node.x += node.vx;
-        node.y += node.vy;
+    const connect = () => {
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a; b < particles.length; b++) {
+          let dx = particles[a].x - particles[b].x;
+          let dy = particles[a].y - particles[b].y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0, 255, 170, 0.6)"; // Increased from 0.3
-        ctx.fill();
-
-        // Add subtle glow
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = "rgba(0, 255, 170, 0.4)";
-
-        // Connect nodes
-        for (let j = i + 1; j < nodes.length; j++) {
-          const other = nodes[j];
-          const dx = node.x - other.x;
-          const dy = node.y - other.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < connectionDistance) {
-            const opacity = 1 - distance / connectionDistance;
+          if (distance < 50) {
+            let opacity = 1 - (distance / 50);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.15})`;
+            ctx.lineWidth = 0.5;
             ctx.beginPath();
-            ctx.moveTo(node.x, node.y);
-            ctx.lineTo(other.x, other.y);
-            ctx.strokeStyle = `rgba(0, 255, 170, ${opacity * 0.25})`; // Increased from 0.15
-            ctx.shadowBlur = 0; // Reset shadow for lines to keep performance
-            ctx.lineWidth = 1;
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
             ctx.stroke();
           }
         }
-
-        // Mouse interaction
-        const mdx = node.x - mouseRef.current.x;
-        const mdy = node.y - mouseRef.current.y;
-        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-
-        if (mdist < mouseDistance) {
-          const mOpacity = 1 - mdist / mouseDistance;
-          ctx.beginPath();
-          ctx.moveTo(node.x, node.y);
-          ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
-          ctx.strokeStyle = `rgba(123, 92, 255, ${mOpacity * 0.6})`; // Increased from 0.4
-          ctx.lineWidth = 1.5; // Slightly thicker
-          ctx.stroke();
-        }
-      });
-
-      animationFrameId = requestAnimationFrame(draw);
+      }
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-    };
-
-    window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", handleMouseMove);
-    resize();
-    draw();
+    window.addEventListener("mousemove", (e) => {
+      mouse.x = e.x; mouse.y = e.y;
+    });
+    window.addEventListener("resize", init);
+    init();
+    animate();
 
     return () => {
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", init);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 z-0 opacity-70 pointer-events-none" // Increased from 40
-    />
-  );
+  return <canvas ref={canvasRef} className="absolute inset-0 z-0 bg-neutral-950" />;
 }
