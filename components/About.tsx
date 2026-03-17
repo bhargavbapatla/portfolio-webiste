@@ -1,214 +1,130 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
-const facts = [
-  { label: "Location", value: "Pune, India" },
-  { label: "Education", value: "B.Tech · VIIT" },
-  { label: "Focus", value: "React · AI · TypeScript" },
-  { label: "Availability", value: "Open to roles", accent: true },
-];
-
-const codeLines = [
-  { text: "// core philosophy", dim: false, comment: true },
-  { text: "const engineer = {", dim: false },
-  { text: '  craft:      "pixel-perfect",', dim: true },
-  { text: '  obsession:  "60fps always",', dim: true },
-  { text: '  approach:   "design-first",', dim: true },
-  { text: '  goal:       "unforgettable",', dim: true },
-  { text: "};", dim: false },
-  { text: "", dim: false },
-  { text: "export default engineer;", dim: false, accent: true },
-];
+const reveal = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+};
 
 export function About() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], [-20, 20]);
-
   return (
-    <section id="about" ref={ref} className="relative overflow-hidden py-40 px-8">
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute -right-64 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-violet-500/5 blur-[120px]" />
+    <section id="about" className="relative py-32 px-8" style={{ background: "#f5f2ee" }}>
+      {/* Top rule */}
+      <div className="mx-auto max-w-7xl">
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        {/* Section label */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-20 flex items-center gap-4"
-        >
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#00ffaa]">
-            01 — About
-          </span>
-          <div className="h-px flex-1 bg-white/5 max-w-xs" />
-        </motion.div>
+        {/* Header row */}
+        <div className="flex items-baseline justify-between border-b border-black/10 pb-6 mb-16">
+          <span className="mono text-[11px] tracking-[0.25em] uppercase text-black/35">01 — About</span>
+          <span className="sans text-[13px] text-black/35">Software Engineer</span>
+        </div>
 
-        <div className="grid gap-24 lg:grid-cols-[1fr_420px] lg:items-start">
-          {/* Left — text */}
-          <div>
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[clamp(40px,6vw,80px)] font-black leading-[0.95] tracking-tight text-white"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-            >
-              I Build What
-              <br />
-              <span
-                className="text-transparent"
-                style={{ WebkitTextStroke: "1px rgba(255,255,255,0.15)" }}
-              >
-                Others
-              </span>{" "}
-              <span
-                style={{
-                  background: "linear-gradient(90deg, #00ffaa, #7b5cff)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Imagine
-              </span>
-            </motion.h2>
+        {/* Main grid */}
+        <div className="grid gap-16 lg:grid-cols-[1fr_1fr] lg:gap-24">
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="mt-10 space-y-5"
-            >
+          {/* Left — big serif pull quote */}
+          <motion.div
+            initial="hidden" whileInView="show" viewport={{ once: true }} variants={reveal}
+          >
+            <h2 className="serif text-[clamp(36px,5vw,64px)] font-black leading-[1.05] tracking-tight text-black">
+              Engineer who<br />
+              <em className="italic">thinks</em> in<br />
+              systems.
+            </h2>
+
+            <div className="mt-10 space-y-5 max-w-md">
               {[
-                "I'm a Software Engineer with 3+ years of experience architecting scalable applications powered by modern frameworks and Generative AI. I bridge frontend precision with AI engineering.",
-                "At Invimatic Technologies, I spearheaded a Low-Code/No-Code SaaS platform in React + TypeScript, built real-time chat via Redis & Webhooks cutting server load by 60%, and engineered a Cube.js analytics pipeline that saved 800ms per query.",
-                "When I'm not shipping features, I'm building agentic AI systems, exploring RAG pipelines, and contributing to projects that push what's possible in the browser.",
+                "3+ years architecting scalable applications powered by React, TypeScript, and Generative AI. I bridge frontend precision with deep backend and AI engineering.",
+                "At Invimatic Technologies I spearheaded a Low-Code/No-Code SaaS platform, built real-time systems via Redis & Webhooks — cutting server load by 60% — and engineered a Cube.js analytics pipeline saving 800ms per query.",
+                "Currently exploring agentic AI systems, RAG pipelines, and the next generation of human-computer interfaces.",
               ].map((p, i) => (
-                <p
-                  key={i}
-                  className="font-mono text-sm leading-[2] text-white/40"
-                  style={{ fontFamily: "'DM Mono', monospace" }}
-                >
-                  {p}
-                </p>
+                <p key={i} className="sans text-[15px] leading-relaxed text-black/55 font-light">{p}</p>
               ))}
+            </div>
+
+            <div className="mt-10 flex items-center gap-4">
+              <a
+                href="#contact"
+                className="flex items-center gap-2 bg-[#0a0a0a] text-[#f5f2ee] px-6 py-3 sans text-[12px] font-medium tracking-wide hover:bg-black/80 transition-colors"
+                style={{ borderRadius: "2px" }}
+              >
+                Work Together ↗
+              </a>
+              <a
+                href="/resume.pdf"
+                className="flex items-center gap-2 border border-black/15 px-6 py-3 sans text-[12px] font-medium text-black/55 hover:text-black hover:border-black/35 transition-all"
+                style={{ borderRadius: "2px" }}
+              >
+                Resume PDF
+              </a>
+            </div>
+          </motion.div>
+
+          {/* Right — info cards */}
+          <motion.div
+            initial="hidden" whileInView="show" viewport={{ once: true }}
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
+            className="flex flex-col gap-0"
+          >
+            {/* Code snippet card */}
+            <motion.div
+              variants={reveal}
+              className="border border-black/10 mb-4 overflow-hidden"
+              style={{ borderRadius: "4px" }}
+            >
+              <div className="flex items-center justify-between px-5 py-3 border-b border-black/8" style={{ background: "#edeae5" }}>
+                <span className="mono text-[10px] tracking-widest uppercase text-black/35">engineer.ts</span>
+                <div className="flex gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-black/10" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-black/10" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-black/10" />
+                </div>
+              </div>
+              <div className="p-5 mono text-[13px] leading-7" style={{ background: "#f8f6f2" }}>
+                <div className="text-black/30 italic">// professional summary</div>
+                <div className="text-black/70">const engineer = {"{"}</div>
+                <div className="text-black/50 pl-4">stack:    <span className="text-black/70">"React · TS · AI"</span>,</div>
+                <div className="text-black/50 pl-4">exp:      <span className="text-black/70">"3+ years"</span>,</div>
+                <div className="text-black/50 pl-4">location: <span className="text-black/70">"Pune, India"</span>,</div>
+                <div className="text-black/50 pl-4">status:   <span className="text-black/90 font-medium">"open to roles"</span>,</div>
+                <div className="text-black/70">{"}"}</div>
+                <div className="mt-1 text-black/80">export default engineer;</div>
+              </div>
             </motion.div>
 
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="mt-16 grid grid-cols-3 gap-0 border border-white/5"
-            >
+            {/* Stats grid */}
+            <motion.div variants={reveal} className="grid grid-cols-3 border border-black/10" style={{ borderRadius: "4px" }}>
               {[
                 { num: "3+", label: "Years" },
                 { num: "10+", label: "Projects" },
                 { num: "60%", label: "Perf ↑" },
               ].map((s, i) => (
-                <div
-                  key={s.label}
-                  className={`px-8 py-6 ${i < 2 ? "border-r border-white/5" : ""}`}
-                >
-                  <div
-                    className="text-4xl font-black text-white"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                  >
-                    {s.num}
-                  </div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
-                    {s.label}
-                  </div>
+                <div key={s.label} className="px-6 py-6" style={{ borderRight: i < 2 ? "1px solid rgba(10,10,10,0.1)" : "none" }}>
+                  <div className="serif text-3xl font-black text-black">{s.num}</div>
+                  <div className="mono text-[10px] uppercase tracking-[0.15em] text-black/35 mt-1">{s.label}</div>
                 </div>
               ))}
             </motion.div>
-          </div>
 
-          {/* Right — card stack */}
-          <div className="flex flex-col gap-4">
-            {/* Code card */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              style={{ x }}
-              className="relative overflow-hidden border border-white/8 bg-[#0d0d12]"
-              style={{
-                clipPath:
-                  "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
-              }}
-            >
-              {/* Window chrome */}
-              <div className="flex items-center gap-2 border-b border-white/5 px-5 py-3">
-                <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                <div className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
-                <div className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-                <span className="ml-4 font-mono text-[10px] tracking-widest text-white/20 uppercase">
-                  engineer.ts
-                </span>
-              </div>
-              <div className="p-6 font-mono text-sm leading-7">
-                {codeLines.map((line, i) => (
-                  <div key={i}>
-                    {line.comment ? (
-                      <span className="text-white/25 italic">{line.text}</span>
-                    ) : line.accent ? (
-                      <span className="text-[#00ffaa]">{line.text}</span>
-                    ) : line.dim ? (
-                      <span className="text-white/40">{line.text}</span>
-                    ) : (
-                      <span className="text-white/70">{line.text}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
+            {/* Facts list */}
+            <motion.div variants={reveal} className="mt-4 border border-black/10" style={{ borderRadius: "4px", background: "#f8f6f2" }}>
+              {[
+                { k: "Education", v: "B.Tech · VIIT Pune" },
+                { k: "Current Role", v: "Open to Opportunities" },
+                { k: "Focus", v: "React · TypeScript · AI" },
+                { k: "Location", v: "Pune, India (Remote OK)" },
+              ].map((f, i, arr) => (
+                <div
+                  key={f.k}
+                  className="flex items-center justify-between px-5 py-4"
+                  style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(10,10,10,0.08)" : "none" }}
+                >
+                  <span className="mono text-[11px] uppercase tracking-wider text-black/35">{f.k}</span>
+                  <span className="sans text-[13px] text-black/75 font-medium">{f.v}</span>
+                </div>
+              ))}
             </motion.div>
-
-            {/* Quick facts card */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="border border-white/5 bg-white/[0.015] p-6"
-              style={{
-                clipPath:
-                  "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
-              }}
-            >
-              <div className="mb-4 font-mono text-[10px] tracking-[0.3em] uppercase text-white/25">
-                // quick_facts
-              </div>
-              <ul className="space-y-0 divide-y divide-white/5">
-                {facts.map((f) => (
-                  <li
-                    key={f.label}
-                    className="flex items-center justify-between py-3"
-                  >
-                    <span className="font-mono text-xs text-white/30 uppercase tracking-wider">
-                      {f.label}
-                    </span>
-                    <span
-                      className={`font-mono text-xs ${f.accent ? "text-[#00ffaa]" : "text-white/70"
-                        }`}
-                    >
-                      {f.value}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -7,25 +7,27 @@ import { Contact } from "@/components/Contact";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen selection:bg-purple-500/30 selection:text-purple-200">
+    <main className="relative min-h-screen" style={{ background: "#f5f2ee" }}>
       <Navbar />
       <Hero />
       <About />
       <Projects />
       <Skills />
       <Contact />
-      
-      <footer className="py-12 px-6 border-t border-white/5">
-        <div className="mx-auto max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="font-bricolage text-xl font-bold italic tracking-tighter">
-            Aura<span className="text-purple-500">.</span>
+
+      <footer className="px-8 py-10 border-t border-black/10" style={{ background: "#f5f2ee" }}>
+        <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-baseline gap-1.5">
+            <span className="serif text-lg font-black text-black">KB</span>
+            <span className="mono text-[10px] text-black/30 tracking-widest">.dev</span>
           </div>
-          <p className="text-white/20 text-sm">
-            © {new Date().getFullYear()} Aura Portfolio. All rights reserved.
+          <p className="mono text-[11px] tracking-wider text-black/30">
+            © {new Date().getFullYear()} Krishnabhargav Bapatla · Pune, India
           </p>
-          <div className="flex gap-8 text-xs uppercase tracking-widest font-bold text-white/40">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
+          <div className="flex gap-8 mono text-[10px] uppercase tracking-[0.2em] text-black/30">
+            <a href="#home" className="hover:text-black transition-colors">Top</a>
+            <a href="#projects" className="hover:text-black transition-colors">Work</a>
+            <a href="#contact" className="hover:text-black transition-colors">Contact</a>
           </div>
         </div>
       </footer>

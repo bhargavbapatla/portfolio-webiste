@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── Tailwind v4 color tokens ── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -25,89 +24,85 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  /* ── Portfolio design tokens — available as Tailwind utilities ── */
-  --color-neon: #00ffaa;
-  --color-violet: #7b5cff;
-  --color-rose: #ff4d6d;
-  --color-amber: #ffb830;
-  --color-surface: #111118;
+  /* Design tokens */
+  --color-ink: #0a0a0a;
+  --color-paper: #f5f2ee;
+  --color-paper2: #edeae5;
+  --color-rule: rgba(10, 10, 10, 0.1);
+  --color-mute: rgba(10, 10, 10, 0.4);
+  --color-accent-k: #0a0a0a;
 
-  /* ── Font stacks ── */
-  --font-display: "Bebas Neue", sans-serif;
+  --font-display: "Playfair Display", serif;
   --font-mono: "DM Mono", monospace;
+  --font-sans: "DM Sans", sans-serif;
 }
 
-/* ── Base theme variables (shadcn compatible) ────────────────── */
 :root {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
+  --background: 0 0% 96%;
+  --foreground: 0 0% 4%;
+  --card: 0 0% 96%;
+  --card-foreground: 0 0% 4%;
+  --popover: 0 0% 96%;
+  --popover-foreground: 0 0% 4%;
+  --primary: 0 0% 4%;
+  --primary-foreground: 0 0% 96%;
+  --secondary: 0 0% 90%;
+  --secondary-foreground: 0 0% 4%;
+  --muted: 0 0% 90%;
+  --muted-foreground: 0 0% 40%;
+  --accent: 0 0% 90%;
+  --accent-foreground: 0 0% 4%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
-  --radius: 0.5rem;
+  --border: 0 0% 88%;
+  --input: 0 0% 88%;
+  --ring: 0 0% 4%;
+  --radius: 0.25rem;
 }
 
-/* ── Resets ──────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
-  border-color: var(--border);
   box-sizing: border-box;
+  border-color: rgba(10, 10, 10, 0.1);
 }
 
 html {
   scroll-behavior: auto;
-  /* Lenis owns smooth scroll */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background-color: #050507;
-  color: hsl(var(--foreground));
-  font-feature-settings: "rlig" 1, "calt" 1;
+  background-color: #f5f2ee;
+  color: #0a0a0a;
   overflow-x: hidden;
+  font-family: "DM Sans", sans-serif;
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────── */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #050507;
+  background: #f5f2ee;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 170, 0.2);
-  border-radius: 2px;
+  background: rgba(10, 10, 10, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 170, 0.4);
+  background: rgba(10, 10, 10, 0.4);
 }
 
-/* ── Focus ───────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 1.5px solid rgba(0, 255, 170, 0.5);
+  outline: 1.5px solid #0a0a0a;
   outline-offset: 3px;
 }
 
-/* ── Lenis smooth scroll classes ─────────────────────────────── */
+/* Lenis */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -121,63 +116,28 @@ html.lenis body {
   overflow: hidden;
 }
 
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
+/* Utilities */
+.serif {
+  font-family: "Playfair Display", serif;
 }
 
-/* ── Component utilities ─────────────────────────────────────── */
-
-/* Glass surface — kept from original */
-.glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.mono {
+  font-family: "DM Mono", monospace;
 }
 
-/* Neon gradient text — upgraded from old white version */
-.gradient-text {
-  background: linear-gradient(90deg, #00ffaa, #7b5cff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.sans {
+  font-family: "DM Sans", sans-serif;
 }
 
-/* Ghost outlined text */
-.text-stroke {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
+.rule-top {
+  border-top: 1px solid rgba(10, 10, 10, 0.12);
 }
 
-/* Clipped angled button corners */
-.clip-btn {
-  clip-path: polygon(0 0,
-      calc(100% - 12px) 0,
-      100% 12px,
-      100% 100%,
-      12px 100%,
-      0 calc(100% - 12px));
+.rule-bottom {
+  border-bottom: 1px solid rgba(10, 10, 10, 0.12);
 }
 
-/* ── Keyframes ───────────────────────────────────────────────── */
-
-/* Kept from original */
-@keyframes glow {
-
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-
-  50% {
-    opacity: 0.6;
-  }
-}
-
-.animate-glow {
-  animation: glow 4s ease-in-out infinite;
-}
-
-/* Marquee — used in Skills component */
+/* Marquee */
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -189,24 +149,18 @@ html.lenis body {
 }
 
 .animate-marquee {
-  animation: marquee 28s linear infinite;
+  animation: marquee 35s linear infinite;
 }
 
-/* Scroll indicator pulse — used in Hero */
-@keyframes scrollPulse {
+/* Fade up reveal */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
 
-  0%,
-  100% {
+  to {
     opacity: 1;
-    transform: scaleY(1);
+    transform: translateY(0);
   }
-
-  50% {
-    opacity: 0.3;
-    transform: scaleY(0.6);
-  }
-}
-
-.animate-scroll-pulse {
-  animation: scrollPulse 2s ease-in-out infinite;
 }
