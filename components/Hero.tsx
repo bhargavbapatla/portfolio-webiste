@@ -1,8 +1,45 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
+import { NeuralBackground } from "./NeuralBackground";
+
+// Magnetic Button Wrapper
+function MagneticButton({ children, className, href, style }: { children: React.ReactNode, className?: string, href?: string, style?: any }) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 15, stiffness: 150 };
+  const x = useSpring(mouseX, springConfig);
+  const y = useSpring(mouseY, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const { clientX, clientY, currentTarget } = e;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    mouseX.set((clientX - centerX) * 0.4);
+    mouseY.set((clientY - centerY) * 0.4);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  return (
+    <motion.a
+      href={href}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ x, y, ...style }}
+      className={className}
+    >
+      {children}
+    </motion.a>
+  );
+}
 
 // Stagger container variants
 const container = {
@@ -14,7 +51,7 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as any } },
 };
 
 export function Hero() {
@@ -31,12 +68,14 @@ export function Hero() {
     >
       {/* ── Background ──────────────────────────── */}
       <div className="absolute inset-0 z-0">
+        <NeuralBackground />
+
         {/* Grid */}
         <div
           className="absolute inset-0"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0,255,170,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,170,0.025) 1px, transparent 1px)",
+              "linear-gradient(rgba(0,255,170,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,170,0.03) 1px, transparent 1px)",
             backgroundSize: "64px 64px",
             maskImage:
               "radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent)",
@@ -45,14 +84,11 @@ export function Hero() {
         {/* Orbs */}
         <motion.div
           style={{ y }}
-          className="absolute -top-32 right-0 h-[600px] w-[600px] rounded-full bg-[#00ffaa]/5 blur-[100px]"
+          className="absolute -top-32 right-0 h-[600px] w-[600px] rounded-full bg-[#00ffaa]/10 blur-[120px]"
         />
         <motion.div
           style={{ y }}
-          className="absolute top-1/2 -left-48 h-[400px] w-[400px] rounded-full bg-violet-500/6 blur-[100px]"
-        />
-        <motion.div
-          className="absolute bottom-0 right-1/4 h-[300px] w-[300px] rounded-full bg-rose-500/5 blur-[80px]"
+          className="absolute top-1/2 -left-48 h-[400px] w-[400px] rounded-full bg-violet-500/15 blur-[120px]"
         />
       </div>
 
@@ -75,30 +111,31 @@ export function Hero() {
         {/* Headline */}
         <motion.h1
           variants={item}
-          className="font-display text-[clamp(56px,11vw,160px)] font-black leading-[0.9] tracking-tight text-white"
+          className="font-display text-[clamp(56px,11vw,160px)] font-black leading-[0.9] tracking-tight text-white mb-6"
           style={{ fontFamily: "'Bebas Neue', sans-serif" }}
         >
-          Crafting
-          <br />
-          <span
-            className="text-transparent"
-            style={{ WebkitTextStroke: "1px rgba(255,255,255,0.18)" }}
-          >
-            Interfaces
-          </span>
-          <br />
-          That{" "}
-          <span
-            className="relative inline-block"
-            style={{
-              background: "linear-gradient(90deg, #00ffaa, #7b5cff)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Live
-          </span>
-          .
+          {["Crafting", "Interfaces", "That", "Live."].map((word, i) => (
+            <span key={i} className="inline-block mr-[0.2em] overflow-hidden align-bottom">
+              <motion.span
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.3 + i * 0.1,
+                  ease: [0.22, 1, 0.36, 1]
+                }}
+                className={i === 1 ? "text-transparent inline-block" : "inline-block"}
+                style={i === 1 ? { WebkitTextStroke: "1px rgba(255,255,255,0.18)" } : i === 2 ? {
+                  background: "linear-gradient(90deg, #00ffaa, #7b5cff)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                } : {}}
+              >
+                {word}
+              </motion.span>
+              {i === 1 && <br />}
+            </span>
+          ))}
         </motion.h1>
 
         {/* Subtext + CTA row */}
@@ -115,21 +152,24 @@ export function Hero() {
             building for the world.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <a
+          <div className="flex flex-wrap items-center gap-6">
+            <MagneticButton
               href="#projects"
-              className="group relative flex items-center gap-3 overflow-hidden bg-[#00ffaa] px-7 py-4 font-mono text-xs font-semibold uppercase tracking-widest text-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,170,0.35)]"
+              className="group relative flex items-center gap-3 overflow-hidden bg-[#00ffaa] px-8 py-5 font-mono text-xs font-semibold uppercase tracking-widest text-black transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,255,170,0.4)]"
               style={{
                 clipPath:
                   "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
               }}
             >
-              View Work
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-            <a
+              <span className="relative z-10 flex items-center gap-3">
+                View Work
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
+            </MagneticButton>
+
+            <MagneticButton
               href="/resume.pdf"
-              className="flex items-center gap-3 border border-white/10 px-7 py-4 font-mono text-xs font-semibold uppercase tracking-widest text-white/60 transition-all duration-300 hover:border-white/30 hover:text-white"
+              className="group flex items-center gap-3 border border-white/10 bg-white/5 backdrop-blur-sm px-8 py-5 font-mono text-xs font-semibold uppercase tracking-widest text-white/60 transition-all duration-300 hover:border-white/30 hover:text-white"
               style={{
                 clipPath:
                   "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
@@ -137,7 +177,7 @@ export function Hero() {
             >
               <Download className="h-3.5 w-3.5" />
               Resume
-            </a>
+            </MagneticButton>
           </div>
         </motion.div>
 
