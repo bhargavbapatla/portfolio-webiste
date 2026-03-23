@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   motion,
   useScroll,
@@ -10,10 +10,6 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin();
 
 // ─── Magnetic Button ──────────────────────────────────────────────────────────
 function MagneticButton({
@@ -52,93 +48,6 @@ function MagneticButton({
   );
 }
 
-// ─── Canvas particles ─────────────────────────────────────────────────────────
-function HeroCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: -999, y: -999 });
-
-  useEffect(() => {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    let raf: number;
-    let pts: { x: number; y: number; vx: number; vy: number; r: number }[] = [];
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      pts = Array.from({ length: 52 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.38,
-        vy: (Math.random() - 0.5) * 0.38,
-        r: Math.random() * 1.4 + 0.4,
-      }));
-    };
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      pts.forEach((p, i) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0, 122, 229, 0.7)";
-        ctx.shadowBlur = 7;
-        ctx.shadowColor = "rgba(0, 122, 229, 0.45)";
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        for (let j = i + 1; j < pts.length; j++) {
-          const o = pts[j];
-          const dx = p.x - o.x, dy = p.y - o.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 135) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(o.x, o.y);
-            ctx.strokeStyle = `rgba(0, 122, 229, ${(1 - dist / 135) * 0.16})`;
-            ctx.lineWidth = 0.7;
-            ctx.stroke();
-          }
-        }
-
-        const mdx = p.x - mouseRef.current.x, mdy = p.y - mouseRef.current.y;
-        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-        if (mdist < 190) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
-          ctx.strokeStyle = `rgba(235, 97, 16, ${(1 - mdist / 190) * 0.45})`;
-          ctx.lineWidth = 0.9;
-          ctx.stroke();
-        }
-      });
-      raf = requestAnimationFrame(draw);
-    };
-
-    const onMouse = (e: MouseEvent) => { mouseRef.current = { x: e.clientX, y: e.clientY }; };
-    const onLeave = () => { mouseRef.current = { x: -999, y: -999 }; };
-
-    window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", onMouse);
-    document.addEventListener("mouseleave", onLeave);
-    resize();
-    draw();
-
-    return () => {
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", onMouse);
-      document.removeEventListener("mouseleave", onLeave);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />;
-}
-
 // ─── Role rotator ─────────────────────────────────────────────────────────────
 const ROLES = ["Frontend Engineer", "AI Engineer", "TypeScript Dev", "React Architect"];
 
@@ -168,81 +77,59 @@ function RoleRotator() {
   );
 }
 
-// ─── GSAP character split helper ─────────────────────────────────────────────
-// Initial transform is set inline so SSR output is already hidden —
-// no flash before GSAP runs on the client.
-function CharSplit({
-  text,
-  className,
-  style,
-}: {
-  text: string;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
+// ─── Decorative code block ─────────────────────────────────────────────────────
+const CODE_LINES = [
+  { text: "const engineer = {",        indent: 0, color: "text-foreground/10" },
+  { text: 'role:      "fullstack",',   indent: 1, color: "text-blue/15"       },
+  { text: 'focus:     "AI + React",',  indent: 1, color: "text-blue/15"       },
+  { text: 'exp:       "3+ years",',    indent: 1, color: "text-blue/15"       },
+  { text: 'location:  "Pune, IN",',    indent: 1, color: "text-foreground/10" },
+  { text: "};",                        indent: 0, color: "text-foreground/10" },
+  { text: "",                          indent: 0, color: ""                   },
+  { text: "export default engineer;",  indent: 0, color: "text-blue/20"       },
+];
+
+function CodeDecor() {
   return (
-    <span className={className} style={style} aria-label={text}>
-      {text.split("").map((ch, i) => (
-        <span
-          key={i}
-          className="inline-block overflow-hidden"
-          style={{ verticalAlign: "bottom", lineHeight: "inherit" }}
-        >
-          {/* translateY(115%) hides char behind the clip from the very first paint */}
-          <span
-            className="hero-char inline-block"
-            style={{ transform: "translateY(115%)" }}
-          >
-            {ch}
-          </span>
-        </span>
+    <div
+      className="absolute bottom-24 right-8 md:right-14 font-mono text-[11px] leading-[1.9] select-none pointer-events-none"
+      aria-hidden
+    >
+      {CODE_LINES.map((line, i) => (
+        <div key={i} className={`${line.color}`}>
+          {line.indent > 0 && <span className="mr-4 opacity-40">{"  ".repeat(line.indent)}</span>}
+          {line.text}
+        </div>
       ))}
-    </span>
+    </div>
   );
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
+// Text animation: line-mask reveal — each name line slides up from behind
+// an overflow-hidden container (editorial/magazine style).
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const fadeOut   = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const parallaxY  = useTransform(scrollYProgress, [0, 1],   ["0%",  "18%"]);
+  const fadeOut    = useTransform(scrollYProgress, [0, 0.45], [1,     0   ]);
 
-  // ── GSAP entrance ──────────────────────────────────────────────────────────
-  useGSAP(
-    () => {
-      // gsap.set runs synchronously in useLayoutEffect — locks initial states
-      // before the browser paints, even on fast connections.
-      gsap.set(".hero-divider", { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(".hero-sub",     { opacity: 0, y: 18 });
+  // Stagger container for the two name lines
+  const nameContainer = {
+    hidden: {},
+    show:   { transition: { staggerChildren: 0.14, delayChildren: 0.25 } },
+  };
 
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+  const lineReveal = {
+    hidden: { y: "108%"  },
+    show:   { y: "0%", transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] } },
+  };
 
-      // 1. Characters slide up from their inline translateY(115%)
-      tl.to(".hero-char", {
-        y: 0,
-        duration: 1.05,
-        stagger: { amount: 0.42, from: "start" },
-      }, 0.1);
-
-      // 2. Divider extends left → right
-      tl.to(".hero-divider", {
-        scaleX: 1,
-        duration: 0.75,
-        ease: "power3.out",
-      }, 0.72);
-
-      // 3. Sub-elements fade + rise
-      tl.to(".hero-sub", {
-        opacity: 1,
-        y: 0,
-        duration: 0.65,
-        stagger: 0.1,
-        ease: "power2.out",
-      }, 0.88);
-    },
-    { scope: sectionRef }
-  );
+  const fadeUp = (delay: number) => ({
+    initial:    { opacity: 0, y: 18 },
+    animate:    { opacity: 1, y: 0  },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay },
+  });
 
   return (
     <section
@@ -251,50 +138,57 @@ export function Hero() {
       className="relative flex min-h-screen flex-col overflow-hidden"
     >
       {/* ── Background ───────────────────────────────────────────── */}
-      {/* plain div — no framer-motion initial/animate here to avoid SSR mismatch */}
-      <div className="absolute inset-0 z-0 hero-bg-fade">
-        {/* Aurora — top right, blue */}
-        <motion.div
-          style={{ y: parallaxY }}
-          animate={{ scale: [1, 1.18, 1], opacity: [0.13, 0.22, 0.13] }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-48 -right-32 h-[700px] w-[700px] rounded-full bg-blue/20 blur-[160px]"
-        />
-        {/* Aurora — left, orange */}
-        <motion.div
-          style={{ y: parallaxY }}
-          animate={{ scale: [1, 1.22, 1], opacity: [0.05, 0.12, 0.05] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-          className="absolute top-1/3 -left-56 h-[540px] w-[540px] rounded-full bg-orange/15 blur-[150px]"
-        />
-        {/* Aurora — bottom, pink */}
-        <motion.div
-          animate={{ scale: [1, 1.12, 1], opacity: [0.03, 0.08, 0.03] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 6 }}
-          className="absolute bottom-0 right-1/4 h-[360px] w-[360px] rounded-full bg-pink/10 blur-[120px]"
-        />
+      <div className="absolute inset-0 z-0">
 
-        {/* Radial dot grid */}
+        {/* Engineering grid */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(0,122,229,0.12) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-            maskImage: "radial-gradient(ellipse 80% 65% at 50% 40%, black, transparent)",
+            backgroundImage: `
+              linear-gradient(rgba(0,122,229,0.055) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,122,229,0.055) 1px, transparent 1px)
+            `,
+            backgroundSize: "64px 64px",
+            maskImage: "radial-gradient(ellipse 75% 65% at 50% 42%, black 20%, transparent 100%)",
           }}
         />
 
-        <HeroCanvas />
+        {/* Finer sub-grid */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(0,122,229,0.025) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,122,229,0.025) 1px, transparent 1px)
+            `,
+            backgroundSize: "16px 16px",
+            maskImage: "radial-gradient(ellipse 50% 45% at 50% 42%, black, transparent)",
+          }}
+        />
 
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent" />
+        {/* Aurora — top right */}
+        <motion.div
+          style={{ y: parallaxY }}
+          animate={{ scale: [1, 1.16, 1], opacity: [0.11, 0.2, 0.11] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-48 -right-32 h-[640px] w-[640px] rounded-full bg-blue/20 blur-[150px]"
+        />
+        {/* Aurora — bottom left */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.04, 0.09, 0.04] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          className="absolute bottom-1/4 -left-48 h-[480px] w-[480px] rounded-full bg-blue/15 blur-[130px]"
+        />
+
+        {/* Bottom fade to bg */}
+        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent" />
       </div>
 
       {/* ── Top bar ──────────────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.05 }}
+        transition={{ duration: 0.55, delay: 0.08 }}
         className="relative z-10 flex items-center justify-between px-8 pt-28 md:px-14"
       >
         <div className="flex items-center gap-3">
@@ -311,45 +205,64 @@ export function Hero() {
         style={{ opacity: fadeOut }}
         className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center"
       >
-        {/* Name — two lines, GSAP char reveal */}
-        <div className="flex flex-col items-center">
+        {/* Name — line mask reveal */}
+        <motion.div
+          variants={nameContainer}
+          initial="hidden"
+          animate="show"
+          className="flex flex-col items-center"
+        >
           {/* Line 1 — solid */}
-          <div className="leading-[0.87]">
-            <CharSplit
-              text="KRISHNA"
-              className="font-display font-black tracking-tight text-foreground"
+          <div className="overflow-hidden leading-[0.9]">
+            <motion.span
+              variants={lineReveal}
+              className="block font-display font-black tracking-tight text-foreground"
               style={{ fontSize: "clamp(72px, 13.5vw, 190px)" }}
-            />
+            >
+              KRISHNA
+            </motion.span>
           </div>
+
           {/* Line 2 — ghost outline */}
-          <div className="leading-[0.87]">
-            <CharSplit
-              text="BHARGAV"
-              className="font-display font-black tracking-tight"
+          <div className="overflow-hidden leading-[0.9]">
+            <motion.span
+              variants={lineReveal}
+              className="block font-display font-black tracking-tight"
               style={{
                 fontSize: "clamp(72px, 13.5vw, 190px)",
                 color: "transparent",
                 WebkitTextStroke: "1.5px rgba(245,244,223,0.13)",
               }}
-            />
+            >
+              BHARGAV
+            </motion.span>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Thin divider */}
-        <div
-          className="hero-divider mt-10 h-px w-48 bg-gradient-to-r from-transparent via-blue/50 to-transparent"
-          style={{ transform: "scaleX(0)", transformOrigin: "left center" }}
+        {/* Divider */}
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.9, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          style={{ transformOrigin: "left center" }}
+          className="mt-10 h-px w-48 bg-gradient-to-r from-transparent via-blue/50 to-transparent"
         />
 
         {/* Tagline */}
-        <p className="hero-sub mt-7 max-w-lg font-mono text-sm leading-[2] text-foreground/40" style={{ opacity: 0 }}>
+        <motion.p
+          className="mt-7 max-w-lg font-mono text-sm leading-[2] text-foreground/40"
+          {...fadeUp(1.05)}
+        >
           Software Engineer · 3+ years building scalable frontends,
           LLM integrations &amp; agentic AI systems.{" "}
           <span className="text-foreground/20">Based in Pune, India.</span>
-        </p>
+        </motion.p>
 
         {/* CTA buttons */}
-        <div className="hero-sub mt-9 flex flex-wrap items-center justify-center gap-4" style={{ opacity: 0 }}>
+        <motion.div
+          className="mt-9 flex flex-wrap items-center justify-center gap-4"
+          {...fadeUp(1.2)}
+        >
           <MagneticButton
             href="#projects"
             className="group relative flex items-center gap-3 overflow-hidden bg-blue px-7 py-[14px] font-mono text-xs font-semibold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,122,229,0.4)]"
@@ -375,13 +288,18 @@ export function Hero() {
             <Download className="h-3.5 w-3.5" />
             Resume
           </MagneticButton>
-        </div>
+        </motion.div>
       </motion.div>
 
+      {/* ── Decorative code block ─────────────────────────────────── */}
+      <CodeDecor />
+
       {/* ── Bottom bar ───────────────────────────────────────────── */}
-      <div className="relative z-10 flex items-center justify-between px-8 pb-10 md:px-14">
-        {/* Stats */}
-        <div className="hero-sub flex items-center gap-10 border-t border-dark-blue-ui/35 pt-7 w-full" style={{ opacity: 0 }}>
+      <motion.div
+        className="relative z-10 flex items-center justify-between px-8 pb-10 md:px-14"
+        {...fadeUp(1.35)}
+      >
+        <div className="flex items-center gap-10 border-t border-dark-blue-ui/35 pt-7 w-full">
           {[
             { num: "3+",  label: "Years Exp"  },
             { num: "10+", label: "Projects"   },
@@ -410,7 +328,7 @@ export function Hero() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

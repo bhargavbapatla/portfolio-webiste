@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { Github, ArrowUpRight } from "lucide-react";
+import { Github, ArrowUpRight, Eye } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -177,9 +177,57 @@ function MLMockup({ color }: { color: string }) {
 
 const Mockups = [PantryMockup, SaaSMockup, MLMockup];
 
+/* ── Circular visit cursor ──────────────────────────────────── */
+function CircularCursor({ visible, x, y }: { visible: boolean; x: number; y: number }) {
+  return (
+    <div
+      className="pointer-events-none fixed z-[999] -translate-x-1/2 -translate-y-1/2"
+      style={{
+        left: x,
+        top: y,
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.25s ease",
+      }}
+    >
+      {/* Rotating text ring */}
+      <svg
+        width="120"
+        height="120"
+        viewBox="0 0 120 120"
+        style={{ animation: "spin 9s linear infinite" }}
+      >
+        <defs>
+          <path
+            id="cursorCircle"
+            d="M 60 60 m -44 0 a 44 44 0 1 1 88 0 a 44 44 0 1 1 -88 0"
+          />
+        </defs>
+        <text
+          style={{
+            fontFamily: "var(--font-mono, monospace)",
+            fontSize: "9px",
+            fill: "rgba(245,244,223,0.85)",
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+          }}
+        >
+          <textPath href="#cursorCircle">VISIT PROJECT • VISIT PROJECT •</textPath>
+        </text>
+      </svg>
+      {/* Center eye */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm ring-1 ring-white/20">
+          <Eye className="h-4 w-4 text-white" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Component ──────────────────────────────────────────────── */
 export function Projects() {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [cursor, setCursor] = useState({ visible: false, x: 0, y: 0 });
 
   useGSAP(
     () => {
@@ -259,6 +307,7 @@ export function Projects() {
       id="projects"
       style={{ height: `${projects.length * 100}vh` }}
     >
+      <CircularCursor visible={cursor.visible} x={cursor.x} y={cursor.y} />
       {/* ── Sticky viewport ──────────────────────────────────── */}
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
 
@@ -382,7 +431,11 @@ export function Projects() {
               </div>
 
               {/* Right — mockup */}
-              <div className="proj-image relative flex items-center justify-center overflow-hidden">
+              <div
+                className="proj-image relative flex items-center justify-center overflow-hidden cursor-none"
+                onMouseMove={(e) => setCursor({ visible: true, x: e.clientX, y: e.clientY })}
+                onMouseLeave={() => setCursor((s) => ({ ...s, visible: false }))}
+              >
                 {/* Radial ambient */}
                 <div
                   className="pointer-events-none absolute inset-0"
