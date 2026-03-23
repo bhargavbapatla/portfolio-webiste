@@ -184,6 +184,16 @@ html.lenis body {
   animation: marquee 28s linear infinite;
 }
 
+/* Hero background fade-in — CSS-only so no SSR/hydration mismatch */
+@keyframes heroBgFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.hero-bg-fade {
+  animation: heroBgFade 1.4s ease-out forwards;
+}
+
 /* Scroll indicator pulse — used in Hero */
 @keyframes scrollPulse {
 

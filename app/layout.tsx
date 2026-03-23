@@ -50,6 +50,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${dmMono.variable} font-mono antialiased bg-background text-foreground selection:bg-blue/20 selection:text-blue`}
+        suppressHydrationWarning
       >
         <SmoothScroll />
 
