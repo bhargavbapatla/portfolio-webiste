@@ -47,7 +47,7 @@ export function Contact() {
       <div className="pointer-events-none absolute left-1/2 top-0 h-px w-full -translate-x-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Ambient glow */}
-      <div className="pointer-events-none absolute bottom-0 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-[#00ffaa]/4 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-blue/5 blur-[120px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Label */}
@@ -57,10 +57,10 @@ export function Contact() {
           viewport={{ once: true }}
           className="mb-20 flex items-center gap-4"
         >
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#00ffaa]">
+          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-blue">
             05 — Contact
           </span>
-          <div className="h-px flex-1 bg-white/5 max-w-xs" />
+          <div className="h-px flex-1 bg-dark-blue-ui/50 max-w-xs" />
         </motion.div>
 
         <div className="grid gap-20 lg:grid-cols-[1fr_480px]">
@@ -71,21 +71,20 @@ export function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[clamp(48px,7vw,100px)] font-black leading-[0.92] tracking-tight text-white"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+              className="text-[clamp(48px,7vw,100px)] font-black leading-[0.92] tracking-tight text-foreground"
             >
               Let's Build
               <br />
               <span
                 className="text-transparent"
-                style={{ WebkitTextStroke: "1px rgba(255,255,255,0.13)" }}
+                style={{ WebkitTextStroke: "1px rgba(245,244,223,0.13)" }}
               >
                 Something
               </span>
               <br />
               <span
                 style={{
-                  background: "linear-gradient(90deg, #00ffaa, #7b5cff)",
+                  background: "linear-gradient(90deg, var(--color-blue), var(--color-pink))",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
@@ -99,7 +98,7 @@ export function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="mt-10 max-w-md font-mono text-sm leading-[2] text-white/35"
+              className="mt-10 max-w-md font-mono text-sm leading-[2] text-foreground/50"
             >
               Open to full-time roles, freelance projects, and AI-powered product
               builds. If you have a vision that needs engineering precision, let's
@@ -112,27 +111,27 @@ export function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="mt-14 flex flex-col gap-0 divide-y divide-white/5 border-t border-white/5"
+              className="mt-14 flex flex-col gap-0 divide-y divide-dark-blue-ui/50 border-t border-dark-blue-ui/50"
             >
               {socials.map((s) => {
                 const Icon = s.icon;
                 const inner = (
                   <div className="group flex items-center justify-between py-5 transition-all duration-300 hover:pl-2">
                     <div className="flex items-center gap-5">
-                      <div className="flex h-9 w-9 items-center justify-center border border-white/8 text-white/30 transition-colors duration-300 group-hover:border-[#00ffaa]/30 group-hover:text-[#00ffaa]">
+                      <div className="flex h-9 w-9 items-center justify-center border border-dark-blue-ui/80 text-foreground/40 transition-colors duration-300 group-hover:border-blue/30 group-hover:text-blue">
                         <Icon className="h-4 w-4" />
                       </div>
                       <div>
-                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/25">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
                           {s.label}
                         </div>
-                        <div className="font-mono text-sm text-white/60 transition-colors duration-300 group-hover:text-white">
+                        <div className="font-mono text-sm text-foreground/80 transition-colors duration-300 group-hover:text-foreground">
                           {s.handle}
                         </div>
                       </div>
                     </div>
                     {s.href && (
-                      <ArrowUpRight className="h-4 w-4 text-white/15 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#00ffaa]" />
+                      <ArrowUpRight className="h-4 w-4 text-foreground/20 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-blue" />
                     )}
                   </div>
                 );
@@ -145,7 +144,7 @@ export function Contact() {
                     rel="noopener noreferrer"
                     className="block"
                   >
-                    {inner}
+                     {inner}
                   </a>
                 ) : (
                   <div key={s.label}>{inner}</div>
@@ -163,13 +162,13 @@ export function Contact() {
           >
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col gap-5 border border-white/5 bg-white/[0.015] p-8"
+              className="flex flex-col gap-5 border border-dark-blue-ui/50 bg-white/[0.015] p-8"
               style={{
                 clipPath:
                   "polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
               }}
             >
-              <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.3em] text-white/25">
+              <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">
                 // send_message
               </div>
 
@@ -182,7 +181,7 @@ export function Contact() {
                   <div key={f.id} className="flex flex-col gap-2">
                     <label
                       htmlFor={f.id}
-                      className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/25"
+                      className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40"
                     >
                       {f.label}
                     </label>
@@ -192,15 +191,15 @@ export function Contact() {
                       placeholder={f.placeholder}
                       onFocus={() => setFocused(f.id)}
                       onBlur={() => setFocused(null)}
-                      className="border border-white/8 bg-transparent px-4 py-3 font-mono text-sm text-white placeholder-white/20 outline-none transition-all duration-300"
+                      className="border border-dark-blue-ui/80 bg-transparent px-4 py-3 font-mono text-sm text-foreground placeholder-foreground/30 outline-none transition-all duration-300"
                       style={{
                         borderColor:
                           focused === f.id
-                            ? "rgba(0,255,170,0.35)"
-                            : "rgba(255,255,255,0.06)",
+                            ? "rgba(0,122,229,0.35)"
+                            : "var(--color-dark-blue-ui)",
                         background:
                           focused === f.id
-                            ? "rgba(0,255,170,0.02)"
+                            ? "rgba(0,122,229,0.02)"
                             : "transparent",
                       }}
                     />
@@ -212,7 +211,7 @@ export function Contact() {
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="subject"
-                  className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/25"
+                  className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40"
                 >
                   Subject
                 </label>
@@ -222,15 +221,15 @@ export function Contact() {
                   placeholder="Let's build something together"
                   onFocus={() => setFocused("subject")}
                   onBlur={() => setFocused(null)}
-                  className="border border-white/8 bg-transparent px-4 py-3 font-mono text-sm text-white placeholder-white/20 outline-none transition-all duration-300"
+                  className="border border-dark-blue-ui/80 bg-transparent px-4 py-3 font-mono text-sm text-foreground placeholder-foreground/30 outline-none transition-all duration-300"
                   style={{
                     borderColor:
                       focused === "subject"
-                        ? "rgba(0,255,170,0.35)"
-                        : "rgba(255,255,255,0.06)",
+                        ? "rgba(0,122,229,0.35)"
+                        : "var(--color-dark-blue-ui)",
                     background:
                       focused === "subject"
-                        ? "rgba(0,255,170,0.02)"
+                        ? "rgba(0,122,229,0.02)"
                         : "transparent",
                   }}
                 />
@@ -240,7 +239,7 @@ export function Contact() {
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="message"
-                  className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/25"
+                  className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40"
                 >
                   Message
                 </label>
@@ -250,15 +249,15 @@ export function Contact() {
                   placeholder="Tell me about your project or opportunity..."
                   onFocus={() => setFocused("message")}
                   onBlur={() => setFocused(null)}
-                  className="resize-none border border-white/8 bg-transparent px-4 py-3 font-mono text-sm text-white placeholder-white/20 outline-none transition-all duration-300"
+                  className="resize-none border border-dark-blue-ui/80 bg-transparent px-4 py-3 font-mono text-sm text-foreground placeholder-foreground/30 outline-none transition-all duration-300"
                   style={{
                     borderColor:
                       focused === "message"
-                        ? "rgba(0,255,170,0.35)"
-                        : "rgba(255,255,255,0.06)",
+                        ? "rgba(0,122,229,0.35)"
+                        : "var(--color-dark-blue-ui)",
                     background:
                       focused === "message"
-                        ? "rgba(0,255,170,0.02)"
+                        ? "rgba(0,122,229,0.02)"
                         : "transparent",
                   }}
                 />
@@ -267,7 +266,7 @@ export function Contact() {
               {/* Submit */}
               <button
                 type="submit"
-                className="group relative mt-2 flex items-center justify-center gap-3 overflow-hidden bg-[#00ffaa] px-8 py-4 font-mono text-xs font-semibold uppercase tracking-widest text-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,170,0.3)]"
+                className="group relative mt-2 flex items-center justify-center gap-3 overflow-hidden bg-blue px-8 py-4 font-mono text-xs font-semibold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,122,229,0.3)]"
                 style={{
                   clipPath:
                     "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",

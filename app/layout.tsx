@@ -49,7 +49,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${dmMono.variable} font-mono antialiased bg-[#050507] text-white selection:bg-[#00ffaa]/20 selection:text-[#00ffaa]`}
+        className={`${dmMono.variable} font-mono antialiased bg-background text-foreground selection:bg-blue/20 selection:text-blue`}
       >
         <SmoothScroll />
 
@@ -62,12 +62,12 @@ export default function RootLayout({
           }}
         />
 
-        {/* Ambient background — top neon glow */}
-        <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_40%_at_50%_-10%,rgba(0,255,170,0.06),transparent)]" />
-        {/* Bottom-right violet */}
-        <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_50%_40%_at_80%_100%,rgba(123,92,255,0.05),transparent)]" />
+        {/* Ambient background — top blue glow */}
+        <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_80%_40%_at_50%_-10%,rgba(0,122,229,0.06),transparent)]" />
+        {/* Bottom-right pink */}
+        <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_50%_40%_at_80%_100%,rgba(255,217,201,0.05),transparent)]" />
         {/* Base dark */}
-        <div className="pointer-events-none fixed inset-0 -z-20 bg-[#050507]" />
+        <div className="pointer-events-none fixed inset-0 -z-20 bg-background" />
 
         {children}
       </body>

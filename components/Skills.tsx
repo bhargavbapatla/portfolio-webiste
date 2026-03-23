@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const skillGroups = [
   {
     category: "Frontend",
-    color: "#00ffaa",
+    color: "var(--color-blue)",
     items: [
       { name: "React.js", level: 95 },
       { name: "TypeScript", level: 92 },
@@ -18,7 +18,7 @@ const skillGroups = [
   },
   {
     category: "AI & Backend",
-    color: "#7b5cff",
+    color: "var(--color-pink)",
     items: [
       { name: "LangChain / LangGraph", level: 85 },
       { name: "Node.js / Express", level: 88 },
@@ -30,7 +30,7 @@ const skillGroups = [
   },
   {
     category: "Data & Infra",
-    color: "#ff4d6d",
+    color: "var(--color-orange)",
     items: [
       { name: "PostgreSQL", level: 85 },
       { name: "Redis", level: 78 },
@@ -42,7 +42,7 @@ const skillGroups = [
   },
   {
     category: "Tools & More",
-    color: "#ffb830",
+    color: "var(--color-grey)",
     items: [
       { name: "Git / GitHub", level: 92 },
       { name: "TensorFlow / Keras", level: 78 },
@@ -76,10 +76,10 @@ export function Skills() {
           viewport={{ once: true }}
           className="mb-20 flex items-center gap-4"
         >
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#00ffaa]">
+          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-blue">
             04 — Skills
           </span>
-          <div className="h-px flex-1 bg-white/5 max-w-xs" />
+          <div className="h-px flex-1 bg-dark-blue-ui/50 max-w-xs" />
         </motion.div>
 
         {/* Heading */}
@@ -88,14 +88,13 @@ export function Skills() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16 text-[clamp(40px,6vw,80px)] font-black leading-[0.92] tracking-tight text-white"
-          style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+          className="mb-16 text-[clamp(40px,6vw,80px)] font-black leading-[0.92] tracking-tight text-foreground"
         >
           Technical
           <br />
           <span
             className="text-transparent"
-            style={{ WebkitTextStroke: "1px rgba(255,255,255,0.13)" }}
+            style={{ WebkitTextStroke: "1px rgba(245,244,223,0.13)" }}
           >
             Arsenal
           </span>
@@ -115,12 +114,12 @@ export function Skills() {
               onClick={() => setActiveGroup(i)}
               className="relative px-5 py-2.5 font-mono text-xs uppercase tracking-widest transition-all duration-300"
               style={{
-                color: activeGroup === i ? "#000" : "rgba(255,255,255,0.3)",
+                color: activeGroup === i ? "#000" : "rgba(245,244,223,0.4)",
                 clipPath:
                   "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
                 background:
-                  activeGroup === i ? g.color : "rgba(255,255,255,0.03)",
-                border: activeGroup === i ? "none" : "1px solid rgba(255,255,255,0.06)",
+                  activeGroup === i ? g.color : "rgba(245,244,223,0.03)",
+                border: activeGroup === i ? "none" : "1px solid rgba(245,244,223,0.06)",
               }}
             >
               {g.category}
@@ -144,14 +143,14 @@ export function Skills() {
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="group border border-white/5 bg-white/[0.015] p-5 transition-colors duration-300 hover:border-white/10"
+                className="group border border-white/5 bg-white/[0.015] p-5 transition-colors duration-300 hover:border-dark-blue-ui/50"
                 style={{
                   clipPath:
                     "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))",
                 }}
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="font-mono text-xs text-white/70 group-hover:text-white transition-colors duration-300">
+                  <span className="font-mono text-xs text-foreground/70 group-hover:text-foreground transition-colors duration-300">
                     {skill.name}
                   </span>
                   <span
@@ -161,7 +160,7 @@ export function Skills() {
                     {skill.level}%
                   </span>
                 </div>
-                <div className="h-[2px] w-full bg-white/5">
+                <div className="h-[2px] w-full bg-dark-blue-ui/50">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${skill.level}%` }}
@@ -178,17 +177,17 @@ export function Skills() {
         </AnimatePresence>
 
         {/* Marquee */}
-        <div className="relative mt-24 overflow-hidden border-t border-b border-white/5 py-6">
+        <div className="relative mt-24 overflow-hidden border-t border-b border-dark-blue-ui/50 py-6">
           <div className="flex gap-12 whitespace-nowrap"
             style={{ animation: "marquee 28s linear infinite" }}
           >
             {[...marqueeWords, ...marqueeWords].map((word, i) => (
               <span
                 key={i}
-                className="flex items-center gap-12 font-mono text-xs uppercase tracking-[0.3em] text-white/15"
+                className="flex items-center gap-12 font-mono text-xs uppercase tracking-[0.3em] text-foreground/20"
               >
                 {word}
-                <span className="text-[#00ffaa]/30">◆</span>
+                <span className="text-blue/30">◆</span>
               </span>
             ))}
           </div>

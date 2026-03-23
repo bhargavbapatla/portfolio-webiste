@@ -44,20 +44,20 @@ export function Navbar() {
       {/* Logo */}
       <a href="#home" className="group relative flex items-center gap-2">
         <span
-          className="font-mono text-xs tracking-[0.3em] uppercase text-white/30 group-hover:text-white/60 transition-colors duration-300"
+          className="font-mono text-xs tracking-[0.3em] uppercase text-foreground/30 group-hover:text-foreground/60 transition-colors duration-300"
         >
           &lt;
         </span>
-        <span className="font-mono text-sm font-semibold tracking-widest text-white">
+        <span className="font-mono text-sm font-semibold tracking-widest text-foreground">
           KB
         </span>
         <span
-          className="font-mono text-xs tracking-[0.3em] uppercase text-[#00ffaa] group-hover:text-[#00ffaa] transition-colors duration-300"
+          className="font-mono text-xs tracking-[0.3em] uppercase text-blue group-hover:text-blue transition-colors duration-300"
         >
           /&gt;
         </span>
         {/* Glow under logo */}
-        <span className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00ffaa]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <span className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </a>
 
       {/* Nav pill */}
@@ -65,8 +65,8 @@ export function Navbar() {
         className={cn(
           "hidden md:flex items-center gap-1 rounded-full border px-3 py-2 transition-all duration-500",
           scrolled
-            ? "border-white/10 bg-black/60 backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.5)]"
-            : "border-white/5 bg-white/[0.02] backdrop-blur-sm"
+            ? "border-dark-blue-ui/50 bg-black/60 backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+            : "border-dark-blue-ui/50 bg-dark-blue-ui/20 backdrop-blur-sm"
         )}
       >
         {navItems.map((item) => {
@@ -77,13 +77,13 @@ export function Navbar() {
               href={item.href}
               className={cn(
                 "relative px-4 py-1.5 text-xs font-medium tracking-widest uppercase transition-colors duration-300 rounded-full",
-                isActive ? "text-black" : "text-white/40 hover:text-white"
+                isActive ? "text-foreground" : "text-foreground/40 hover:text-foreground"
               )}
             >
               {isActive && (
                 <motion.span
                   layoutId="nav-pill"
-                  className="absolute inset-0 rounded-full bg-[#00ffaa]"
+                  className="absolute inset-0 rounded-full bg-blue"
                   transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
@@ -94,12 +94,12 @@ export function Navbar() {
       </nav>
 
       {/* Status badge */}
-      <div className="hidden md:flex items-center gap-2 rounded-full border border-white/5 bg-white/[0.02] px-4 py-2 backdrop-blur-sm">
+      <div className="hidden md:flex items-center gap-2 rounded-full border border-dark-blue-ui/50 bg-dark-blue-ui/20 px-4 py-2 backdrop-blur-sm">
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ffaa] opacity-60" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00ffaa]" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue opacity-60" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue" />
         </span>
-        <span className="text-[10px] tracking-[0.2em] uppercase text-white/40">
+        <span className="text-[10px] tracking-[0.2em] uppercase text-foreground/40">
           Available
         </span>
       </div>
