@@ -10,6 +10,7 @@ import {
   useInView,
   AnimatePresence,
   type MotionValue,
+  type Variants,
 } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 
@@ -69,7 +70,7 @@ function RoleRotator() {
           initial={{ y: 14, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -14, opacity: 0 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="absolute right-0 font-mono text-[10px] tracking-[0.25em] uppercase text-foreground/40"
         >
           {ROLES[index]}
@@ -109,8 +110,8 @@ function CodeDecor() {
 
 // ─── Interactive Canvas Background ────────────────────────────────────────────
 function HeroCanvas({ onExplode }: { onExplode: () => void }) {
-  const canvasRef   = useRef<HTMLCanvasElement>(null);
-  const explodeRef  = useRef(onExplode);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const explodeRef = useRef(onExplode);
   useEffect(() => { explodeRef.current = onExplode; }, [onExplode]);
 
   useEffect(() => {
@@ -126,8 +127,8 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
     // ── Phase machine ─────────────────────────────────────────
     type Phase = "idle" | "charging" | "exploding" | "settling";
     let phase: Phase = "idle";
-    let phaseStart   = 0;
-    let lastMoveAt   = Date.now();
+    let phaseStart = 0;
+    let lastMoveAt = Date.now();
     let lastMX = -9999, lastMY = -9999;
     let exX = 0, exY = 0;
 
@@ -140,24 +141,28 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
     let nodes: Node[] = [];
 
     const setup = () => {
-      W = canvas.width  = canvas.offsetWidth;
+      W = canvas.width = canvas.offsetWidth;
       H = canvas.height = canvas.offsetHeight;
       nodes = [];
       for (let i = 0; i < 7; i++)
-        nodes.push({ x: (0.1 + Math.random() * 0.8) * W, y: (0.1 + Math.random() * 0.8) * H,
+        nodes.push({
+          x: (0.1 + Math.random() * 0.8) * W, y: (0.1 + Math.random() * 0.8) * H,
           vx: (Math.random() - 0.5) * 0.18, vy: (Math.random() - 0.5) * 0.18,
-          size: 2.4 + Math.random() * 1.4, phase: Math.random() * Math.PI * 2, isHub: true });
+          size: 2.4 + Math.random() * 1.4, phase: Math.random() * Math.PI * 2, isHub: true
+        });
       for (let i = 0; i < 55; i++)
-        nodes.push({ x: Math.random() * W, y: Math.random() * H,
+        nodes.push({
+          x: Math.random() * W, y: Math.random() * H,
           vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,
-          size: 0.8 + Math.random() * 1.1, phase: Math.random() * Math.PI * 2, isHub: false });
+          size: 0.8 + Math.random() * 1.1, phase: Math.random() * Math.PI * 2, isHub: false
+        });
       phase = "idle";
     };
 
     const CONN = 135, MR = 210, CR = 290, CD = 850;
-    const CHARGE_DUR  = 900;   // ms vibrating before boom
+    const CHARGE_DUR = 900;   // ms vibrating before boom
     const EXPLODE_DUR = 1400;  // ms of supernova visual
-    const SETTLE_DUR  = 2800;  // ms nodes drift back
+    const SETTLE_DUR = 2800;  // ms nodes drift back
 
     const fireExplosion = () => {
       exX = mouse.x; exY = mouse.y;
@@ -165,8 +170,8 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
       // Give every node a radial velocity burst
       for (const n of nodes) {
         const dx = n.x - exX, dy = n.y - exY;
-        const d  = Math.sqrt(dx * dx + dy * dy) || 1;
-        const f  = 18 + Math.random() * 14;
+        const d = Math.sqrt(dx * dx + dy * dy) || 1;
+        const f = 18 + Math.random() * 14;
         n.vx = (dx / d) * f + (Math.random() - 0.5) * 6;
         n.vy = (dy / d) * f + (Math.random() - 0.5) * 6;
       }
@@ -186,14 +191,11 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
       }
 
       // ── Phase transitions ──────────────────────────────────
-      if (phase === "idle" && mouse.x > -100 && now - lastMoveAt > 5000)
-        { phase = "charging"; phaseStart = now; }
+      if (phase === "idle" && mouse.x > -100 && now - lastMoveAt > 5000) { phase = "charging"; phaseStart = now; }
       if (phase === "charging" && now - phaseStart > CHARGE_DUR)
         fireExplosion();
-      if (phase === "exploding" && now - phaseStart > EXPLODE_DUR)
-        { phase = "settling"; phaseStart = now; }
-      if (phase === "settling" && now - phaseStart > SETTLE_DUR)
-        { phase = "idle"; lastMoveAt = now; }
+      if (phase === "exploding" && now - phaseStart > EXPLODE_DUR) { phase = "settling"; phaseStart = now; }
+      if (phase === "settling" && now - phaseStart > SETTLE_DUR) { phase = "idle"; lastMoveAt = now; }
 
       // Purge old click shockwaves
       while (clicks.length && now - clicks[0].t > CD) clicks.shift();
@@ -203,16 +205,16 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
         if (phase === "idle" || phase === "charging") {
           // Mouse attraction
           const mdx = mouse.x - n.x, mdy = mouse.y - n.y;
-          const md  = Math.sqrt(mdx * mdx + mdy * mdy);
+          const md = Math.sqrt(mdx * mdx + mdy * mdy);
           if (md < MR && md > 1) {
             const str = phase === "charging" ? 0.09 : 0.045;
-            const f   = (1 - md / MR) * str;
+            const f = (1 - md / MR) * str;
             n.vx += (mdx / md) * f; n.vy += (mdy / md) * f;
           }
           // Charging vibration — builds in intensity
           if (phase === "charging") {
             const prog = (now - phaseStart) / CHARGE_DUR;
-            const amp  = prog * 0.38;
+            const amp = prog * 0.38;
             n.vx += (Math.random() - 0.5) * amp;
             n.vy += (Math.random() - 0.5) * amp;
           }
@@ -229,7 +231,7 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
           }
         }
 
-        const drag   = phase === "settling" ? 0.92 : 0.955;
+        const drag = phase === "settling" ? 0.92 : 0.955;
         const maxSpd = phase === "exploding" || phase === "settling" ? 20 : 2.8;
         n.vx *= drag; n.vy *= drag;
         const spd = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
@@ -253,7 +255,7 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
           for (let j = i + 1; j < nodes.length; j++) {
             const a = nodes[i], b = nodes[j];
             const dx = a.x - b.x, dy = a.y - b.y;
-            const d  = Math.sqrt(dx * dx + dy * dy);
+            const d = Math.sqrt(dx * dx + dy * dy);
             if (d < CONN) {
               ctx.beginPath();
               ctx.strokeStyle = `rgba(0,122,229,${((1 - d / CONN) * 0.13 * connFade).toFixed(3)})`;
@@ -297,16 +299,16 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
 
       // ── Supernova explosion ────────────────────────────────
       if (phase === "exploding") {
-        const t   = Math.min(1, (now - phaseStart) / EXPLODE_DUR);
+        const t = Math.min(1, (now - phaseStart) / EXPLODE_DUR);
         const maxR = Math.hypot(W, H);
 
         // Bright core flash (quick, white-blue)
         const flashA = Math.max(0, 0.75 - t * 6);
         if (flashA > 0.002) {
           const fg = ctx.createRadialGradient(exX, exY, 0, exX, exY, 160);
-          fg.addColorStop(0,   `rgba(220,240,255,${flashA.toFixed(3)})`);
-          fg.addColorStop(0.35,`rgba(0,122,229,${(flashA * 0.65).toFixed(3)})`);
-          fg.addColorStop(1,   "transparent");
+          fg.addColorStop(0, `rgba(220,240,255,${flashA.toFixed(3)})`);
+          fg.addColorStop(0.35, `rgba(0,122,229,${(flashA * 0.65).toFixed(3)})`);
+          fg.addColorStop(1, "transparent");
           ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
         }
 
@@ -319,8 +321,8 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
         ];
         for (const ring of rings) {
           const rt = Math.max(0, Math.min(1, t * ring.s * 1.5));
-          const r  = rt * maxR;
-          const a  = ring.baseAlpha * (1 - rt);
+          const r = rt * maxR;
+          const a = ring.baseAlpha * (1 - rt);
           if (a < 0.005) continue;
           ctx.beginPath(); ctx.arc(exX, exY, r, 0, Math.PI * 2);
           ctx.strokeStyle = `rgba(0,122,229,${a.toFixed(3)})`;
@@ -346,12 +348,12 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
 
       // ── Draw nodes ─────────────────────────────────────────
       for (const n of nodes) {
-        const pulse  = Math.sin(time * 0.0009 + n.phase);
-        const r      = n.isHub ? n.size + pulse * 0.7 : n.size;
+        const pulse = Math.sin(time * 0.0009 + n.phase);
+        const r = n.isHub ? n.size + pulse * 0.7 : n.size;
         // Nodes fade out quickly during explosion, reappear during settling
         let alpha = 1;
         if (phase === "exploding") alpha = Math.max(0, 1 - (now - phaseStart) / (EXPLODE_DUR * 0.55));
-        if (phase === "settling")  alpha = Math.min(1, (now - phaseStart) / (SETTLE_DUR * 0.4));
+        if (phase === "settling") alpha = Math.min(1, (now - phaseStart) / (SETTLE_DUR * 0.4));
         if (alpha < 0.01) continue;
 
         if (n.isHub) {
@@ -372,7 +374,7 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
     setup();
     raf = requestAnimationFrame(tick);
 
-    const onMove  = (e: MouseEvent) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; };
+    const onMove = (e: MouseEvent) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; };
     const onLeave = () => { mouse.x = -9999; mouse.y = -9999; lastMoveAt = Date.now(); if (phase === "charging") phase = "idle"; };
     const onClick = (e: MouseEvent) => {
       if (phase === "idle" || phase === "settling") {
@@ -409,9 +411,9 @@ function ScrambleText({ text, isOutline = false }: { text: string; isOutline?: b
   const [display, setDisplay] = useState<{ ch: string; locked: boolean }[]>(
     () => text.split("").map((ch) => ({ ch, locked: true }))
   );
-  const ivRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const ivRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const toRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const live   = useRef(false);
+  const live = useRef(false);
 
   const clear = () => {
     if (ivRef.current) clearInterval(ivRef.current);
@@ -468,14 +470,14 @@ function ScrambleText({ text, isOutline = false }: { text: string; isOutline?: b
             transition: "color 0.08s, opacity 0.08s, -webkit-text-stroke-color 0.08s",
             ...(isOutline
               ? {
-                  color: "transparent",
-                  WebkitTextStroke: locked
-                    ? "1.5px rgba(245,244,223,0.15)"
-                    : "1.5px rgba(0,122,229,0.55)",
-                }
+                color: "transparent",
+                WebkitTextStroke: locked
+                  ? "1.5px rgba(245,244,223,0.15)"
+                  : "1.5px rgba(0,122,229,0.55)",
+              }
               : {
-                  color: locked ? "rgba(245,244,223,1)" : "rgba(0,122,229,0.75)",
-                }),
+                color: locked ? "rgba(245,244,223,1)" : "rgba(0,122,229,0.75)",
+              }),
           }}
         >
           {ch === " " ? "\u00a0" : ch}
@@ -513,7 +515,7 @@ function ExplodeHint({
           initial={{ opacity: 0, scale: 0.75 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.75 }}
-          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="pointer-events-none z-[9999] flex items-center gap-2.5 rounded-full border border-white/[0.09] bg-black/85 px-3.5 py-2 shadow-xl backdrop-blur-md"
         >
           {/* Pulsing dot */}
@@ -538,8 +540,8 @@ function ExplodeHint({
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 export function Hero() {
-  const sectionRef  = useRef<HTMLElement>(null);
-  const contentRef  = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef });
   const fadeOut = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
   const [showHint, setShowHint] = useState(false);
@@ -559,7 +561,7 @@ export function Hero() {
 
   // Show hint after entrance animations settle, auto-dismiss before charge fires
   useEffect(() => {
-    const t1 = setTimeout(() => setShowHint(true),  2800);
+    const t1 = setTimeout(() => setShowHint(true), 2800);
     const t2 = setTimeout(() => setShowHint(false), 8200);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
@@ -574,12 +576,12 @@ export function Hero() {
     setTimeout(() => el.classList.remove("hero-shake"), 650);
   };
 
-  const nameContainer = {
+  const nameContainer: Variants = {
     hidden: {},
     show: { transition: { staggerChildren: 0.2, delayChildren: 0.3 } },
   };
 
-  const lineReveal = {
+  const lineReveal: Variants = {
     hidden: { y: "108%" },
     show: { y: "0%", transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] } },
   };
@@ -587,7 +589,7 @@ export function Hero() {
   const fadeUp = (delay: number) => ({
     initial: { opacity: 0, y: 18 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as [number, number, number, number], delay },
   });
 
   return (
@@ -605,137 +607,137 @@ export function Hero() {
       {/* ── Shakeable UI layer ─────────────────────────────────── */}
       <div ref={contentRef} className="relative z-10 flex flex-1 flex-col">
 
-      {/* ── Top bar ──────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, delay: 0.08 }}
-        className="relative z-10 flex items-center justify-between px-5 pt-20 md:px-14 md:pt-28"
-      >
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-blue">
-            01 — Portfolio
-          </span>
-          <div className="h-px w-8 bg-blue/35" />
-        </div>
-        <RoleRotator />
-      </motion.div>
-
-      {/* ── Center content ───────────────────────────────────────── */}
-      <motion.div
-        style={{ opacity: fadeOut }}
-        className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center"
-      >
-        {/* Name — line mask reveal */}
+        {/* ── Top bar ──────────────────────────────────────────────── */}
         <motion.div
-          variants={nameContainer}
-          initial="hidden"
-          animate="show"
-          className="flex flex-col items-center"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.08 }}
+          className="relative z-10 flex items-center justify-between px-5 pt-20 md:px-14 md:pt-28"
         >
-          <div className="overflow-hidden leading-[0.9] pb-4 px-2">
-            <motion.div variants={lineReveal}>
-              <ScrambleText text="KRISHNA" />
-            </motion.div>
-          </div>
-
-          <div className="overflow-hidden leading-[0.9] pb-4 px-2">
-            <motion.div variants={lineReveal}>
-              <ScrambleText text="BHARGAV" isOutline />
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Divider */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.9, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          style={{ transformOrigin: "left center" }}
-          className="mt-10 h-px w-48 bg-gradient-to-r from-transparent via-blue/50 to-transparent"
-        />
-
-        {/* Tagline */}
-        <motion.p
-          className="mt-7 max-w-lg font-mono text-sm leading-[2] text-foreground/60 drop-shadow-md"
-          {...fadeUp(1.4)}
-        >
-          Software Engineer · 3+ years building scalable frontends,
-          LLM integrations &amp; agentic AI systems.{" "}
-          <span className="text-blue">Based in Pune, India.</span>
-        </motion.p>
-
-        {/* CTA buttons */}
-        <motion.div
-          className="mt-9 flex flex-wrap items-center justify-center gap-4"
-          {...fadeUp(1.55)}
-        >
-          <MagneticButton
-            href="#projects"
-            className="group relative flex items-center gap-3 overflow-hidden bg-blue px-7 py-[14px] font-mono text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,122,229,0.5)]"
-            style={{
-              clipPath:
-                "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
-            }}
-          >
-            <span className="relative z-10 flex items-center gap-3">
-              View Work
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-blue">
+              01 — Portfolio
             </span>
-          </MagneticButton>
-
-          <MagneticButton
-            href="/resume.pdf"
-            className="group flex items-center gap-3 border border-dark-blue-ui/50 bg-white/5 backdrop-blur-md px-7 py-[14px] font-mono text-xs font-semibold uppercase tracking-widest text-foreground/70 transition-all duration-300 hover:border-blue hover:shadow-[0_0_20px_rgba(0,122,229,0.2)] hover:text-white"
-            style={{
-              clipPath:
-                "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
-            }}
-          >
-            <Download className="h-3.5 w-3.5" />
-            Resume
-          </MagneticButton>
+            <div className="h-px w-8 bg-blue/35" />
+          </div>
+          <RoleRotator />
         </motion.div>
-      </motion.div>
 
-      {/* ── Decorative code block ─────────────────────────────────── */}
-      <CodeDecor />
-
-      {/* ── Bottom bar ───────────────────────────────────────────── */}
-      <motion.div
-        className="relative z-10 flex items-center justify-between px-5 pb-8 md:px-14 md:pb-10"
-        {...fadeUp(1.7)}
-      >
-        <div className="flex items-center gap-10 border-t border-dark-blue-ui/50 pt-7 w-full">
-          {[
-            { num: "3+", label: "Years Exp" },
-            { num: "10+", label: "Projects" },
-            { num: "60%", label: "Perf Gains" },
-            { num: "98", label: "Lighthouse" },
-          ].map((s, i) => (
-            <div key={s.label} className={`flex flex-col gap-0.5 ${i > 1 ? "hidden sm:flex" : ""}`}>
-              <span className="font-display text-2xl font-black text-foreground leading-none drop-shadow-sm md:text-3xl">
-                {s.num}
-              </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-blue/70">
-                {s.label}
-              </span>
+        {/* ── Center content ───────────────────────────────────────── */}
+        <motion.div
+          style={{ opacity: fadeOut }}
+          className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center"
+        >
+          {/* Name — line mask reveal */}
+          <motion.div
+            variants={nameContainer}
+            initial="hidden"
+            animate="show"
+            className="flex flex-col items-center"
+          >
+            <div className="overflow-hidden leading-[0.9] pb-4 px-2">
+              <motion.div variants={lineReveal}>
+                <ScrambleText text="KRISHNA" />
+              </motion.div>
             </div>
-          ))}
 
-          {/* Scroll cue */}
-          <div className="ml-auto flex items-center gap-2.5 text-foreground/40">
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-orange">Scroll</span>
-            <div className="relative h-7 w-px overflow-hidden bg-dark-blue-ui/30">
-              <motion.div
-                animate={{ y: ["-100%", "200%"] }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
-                className="absolute top-0 h-1/2 w-full bg-gradient-to-b from-transparent via-orange to-transparent"
-              />
+            <div className="overflow-hidden leading-[0.9] pb-4 px-2">
+              <motion.div variants={lineReveal}>
+                <ScrambleText text="BHARGAV" isOutline />
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Divider */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.9, delay: 1.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+            style={{ transformOrigin: "left center" }}
+            className="mt-10 h-px w-48 bg-gradient-to-r from-transparent via-blue/50 to-transparent"
+          />
+
+          {/* Tagline */}
+          <motion.p
+            className="mt-7 max-w-lg font-mono text-sm leading-[2] text-foreground/60 drop-shadow-md"
+            {...fadeUp(1.4)}
+          >
+            Software Engineer · 3+ years building scalable frontends,
+            LLM integrations &amp; agentic AI systems.{" "}
+            <span className="text-blue">Based in Pune, India.</span>
+          </motion.p>
+
+          {/* CTA buttons */}
+          <motion.div
+            className="mt-9 flex flex-wrap items-center justify-center gap-4"
+            {...fadeUp(1.55)}
+          >
+            <MagneticButton
+              href="#projects"
+              className="group relative flex items-center gap-3 overflow-hidden bg-blue px-7 py-[14px] font-mono text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,122,229,0.5)]"
+              style={{
+                clipPath:
+                  "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
+              }}
+            >
+              <span className="relative z-10 flex items-center gap-3">
+                View Work
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
+            </MagneticButton>
+
+            <MagneticButton
+              href="/resume.pdf"
+              className="group flex items-center gap-3 border border-dark-blue-ui/50 bg-white/5 backdrop-blur-md px-7 py-[14px] font-mono text-xs font-semibold uppercase tracking-widest text-foreground/70 transition-all duration-300 hover:border-blue hover:shadow-[0_0_20px_rgba(0,122,229,0.2)] hover:text-white"
+              style={{
+                clipPath:
+                  "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
+              }}
+            >
+              <Download className="h-3.5 w-3.5" />
+              Resume
+            </MagneticButton>
+          </motion.div>
+        </motion.div>
+
+        {/* ── Decorative code block ─────────────────────────────────── */}
+        <CodeDecor />
+
+        {/* ── Bottom bar ───────────────────────────────────────────── */}
+        <motion.div
+          className="relative z-10 flex items-center justify-between px-5 pb-8 md:px-14 md:pb-10"
+          {...fadeUp(1.7)}
+        >
+          <div className="flex items-center gap-10 border-t border-dark-blue-ui/50 pt-7 w-full">
+            {[
+              { num: "3+", label: "Years Exp" },
+              { num: "10+", label: "Projects" },
+              { num: "60%", label: "Perf Gains" },
+              { num: "98", label: "Lighthouse" },
+            ].map((s, i) => (
+              <div key={s.label} className={`flex flex-col gap-0.5 ${i > 1 ? "hidden sm:flex" : ""}`}>
+                <span className="font-display text-2xl font-black text-foreground leading-none drop-shadow-sm md:text-3xl">
+                  {s.num}
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-blue/70">
+                  {s.label}
+                </span>
+              </div>
+            ))}
+
+            {/* Scroll cue */}
+            <div className="ml-auto flex items-center gap-2.5 text-foreground/40">
+              <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-orange">Scroll</span>
+              <div className="relative h-7 w-px overflow-hidden bg-dark-blue-ui/30">
+                <motion.div
+                  animate={{ y: ["-100%", "200%"] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
+                  className="absolute top-0 h-1/2 w-full bg-gradient-to-b from-transparent via-orange to-transparent"
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
       </div>{/* end shakeable UI layer */}
     </section>
   );
