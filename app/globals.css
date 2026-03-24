@@ -34,7 +34,7 @@
   --color-orange: #eb6110;
   --color-pink: #ffd9c9;
   --color-white: #f5f4df;
-  
+
   --color-rt-dark: #222;
   --color-rt-error: #be6464;
   --color-rt-info: #337ab7;
@@ -121,7 +121,8 @@ html.lenis body {
 
 /* Glass surface — kept from original */
 .glass {
-  background: rgba(245, 244, 223, 0.03); /* using color-white with opacity */
+  background: rgba(245, 244, 223, 0.03);
+  /* using color-white with opacity */
   backdrop-filter: blur(10px);
   border: 1px solid rgba(245, 244, 223, 0.05);
 }
@@ -152,9 +153,30 @@ html.lenis body {
 
 /* ── Keyframes ───────────────────────────────────────────────── */
 
+@keyframes hero-shake {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  12%  { transform: translate(-7px, 3px) rotate(-0.4deg); }
+  24%  { transform: translate(7px, -5px) rotate(0.4deg); }
+  36%  { transform: translate(-5px, 5px) rotate(-0.25deg); }
+  50%  { transform: translate(5px, -3px) rotate(0.25deg); }
+  64%  { transform: translate(-3px, 3px) rotate(-0.15deg); }
+  76%  { transform: translate(3px, -2px) rotate(0.1deg); }
+  88%  { transform: translate(-1px, 1px) rotate(-0.05deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.hero-shake {
+  animation: hero-shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Kept from original */
@@ -191,8 +213,13 @@ html.lenis body {
 
 /* Hero background fade-in — CSS-only so no SSR/hydration mismatch */
 @keyframes heroBgFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .hero-bg-fade {
