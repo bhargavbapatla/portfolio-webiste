@@ -7,7 +7,9 @@ import {
   useTransform,
   useSpring,
   useMotionValue,
+  useInView,
   AnimatePresence,
+  type MotionValue,
 } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 
@@ -483,14 +485,87 @@ function ScrambleText({ text, isOutline = false }: { text: string; isOutline?: b
   );
 }
 
+// ─── Explosion hint tooltip (cursor-attached) ────────────────────────────────
+const HINT_LINES = [
+  "hold still · i dare you 🗿",
+  "stop moving · something happens 💥",
+  "go full statue mode · trust",
+  "idle = supernova (no spoilers) ✨",
+];
+
+function ExplodeHint({
+  visible,
+  cursorX,
+  cursorY,
+}: {
+  visible: boolean;
+  cursorX: MotionValue<number>;
+  cursorY: MotionValue<number>;
+}) {
+  const x = useTransform(cursorX, (v) => v + 18);
+  const y = useTransform(cursorY, (v) => v + 18);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          style={{ x, y, position: "fixed", top: 0, left: 0 }}
+          initial={{ opacity: 0, scale: 0.75 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.75 }}
+          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none z-[9999] flex items-center gap-2.5 rounded-full border border-white/[0.09] bg-black/85 px-3.5 py-2 shadow-xl backdrop-blur-md"
+        >
+          {/* Pulsing dot */}
+          <div className="relative flex h-3 w-3 shrink-0 items-center justify-center">
+            <motion.div
+              animate={{ scale: [1, 2.2, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute h-full w-full rounded-full"
+              style={{ backgroundColor: "#007ae5" }}
+            />
+            <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#007ae5" }} />
+          </div>
+
+          <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-foreground/50">
+            {HINT_LINES[0]}
+          </span>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 export function Hero() {
   const sectionRef  = useRef<HTMLElement>(null);
   const contentRef  = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef });
   const fadeOut = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
+  const [showHint, setShowHint] = useState(false);
+  const isHeroInView = useInView(sectionRef, { amount: 0.3 });
+
+  // Cursor tracking for the floating tooltip
+  const rawX = useMotionValue(-400);
+  const rawY = useMotionValue(-400);
+  const cursorX = useSpring(rawX, { damping: 22, stiffness: 280, mass: 0.4 });
+  const cursorY = useSpring(rawY, { damping: 22, stiffness: 280, mass: 0.4 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => { rawX.set(e.clientX); rawY.set(e.clientY); };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [rawX, rawY]);
+
+  // Show hint after entrance animations settle, auto-dismiss before charge fires
+  useEffect(() => {
+    const t1 = setTimeout(() => setShowHint(true),  2800);
+    const t2 = setTimeout(() => setShowHint(false), 8200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
 
   const handleExplode = () => {
+    setShowHint(false); // dismiss hint when explosion fires
     const el = contentRef.current;
     if (!el) return;
     el.classList.remove("hero-shake");
@@ -523,6 +598,9 @@ export function Hero() {
     >
       {/* ── Background ─────────────────────────── */}
       <HeroCanvas onExplode={handleExplode} />
+
+      {/* ── Explode hint tooltip (cursor-attached) ── */}
+      <ExplodeHint visible={showHint && isHeroInView} cursorX={cursorX} cursorY={cursorY} />
 
       {/* ── Shakeable UI layer ─────────────────────────────────── */}
       <div ref={contentRef} className="relative z-10 flex flex-1 flex-col">

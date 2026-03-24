@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { Github, ArrowUpRight, Eye } from "lucide-react";
+import { Github, ArrowUpRight } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,23 +17,26 @@ const projects = [
       "A full-stack monorepo SaaS platform for home-based bakery businesses to manage inventory, orders, and fulfillment. Features Sous Chef AI — an agentic voice assistant powered by Google Gemini LLM & ElevenLabs TTS that executes live DB transactions through natural language.",
     tags: ["React.js", "TypeScript", "Node.js", "PostgreSQL", "Gemini LLM", "ElevenLabs"],
     colorRaw: "#007ae5",
-    link: "#",
-    github: "#",
+    videoSrc: "/pantryPilot_video.mp4",
+    link: "https://pantry-pilot-nine.vercel.app/",
+    github: "https://github.com/bhargavbapatla/PantryPilot",
   },
   {
     num: "02",
-    title: "Low-Code / No-Code SaaS",
-    category: "Enterprise Platform · Invimatic",
+    title: "Nutricore",
+    category: "Multi-Agent AI · HealthTech",
     description:
-      "Spearheaded the frontend architecture of a production SaaS platform using React.js and TypeScript with PWA capabilities. Built real-time chat and live-tracking via Webhooks and Redis — replacing API polling and cutting server requests by 60% with sub-200ms latency.",
-    tags: ["React.js", "TypeScript", "Redis", "Webhooks", "PWA", "Cube.js"],
-    colorRaw: "#c9a8f0",
-    link: "#",
-    github: "#",
+      "Engineered a stateful, multi-agent AI nutrition system using LangGraph and FastAPI. Orchestrates 6 specialized agents for personalized meal planning, leveraging Qdrant for RAG with medical databases and strict Pydantic validation for seamless React frontend sync.",
+    tags: ["React.js", "FastAPI", "PostgreSQL", "LangGraph", "Ollama", "Qdrant"],
+    colorRaw: "#10b981",
+    videoSrc: "/NutriCore.mp4",
+    link: "https://nutri-core-omega.vercel.app/",
+    github: "https://github.com/bhargavbapatla/NutriCore",
   },
   {
     num: "03",
     title: "Image Classification",
+    videoSrc: undefined,
     category: "ML Research · Computer Vision",
     description:
       "Achieved 89.87% accuracy on CIFAR-100 (100-class dataset) by implementing a custom CNN and benchmarking it against a fine-tuned Vision Transformer (ViT). Applied self-attention mechanisms from NLP to image classification for long-range dependency modeling.",
@@ -45,78 +48,19 @@ const projects = [
 ];
 
 /* ── Per-project mockup visuals ─────────────────────────────── */
-function PantryMockup({ color }: { color: string }) {
+function VideoMockup({ src }: { src: string }) {
   return (
-    <div className="flex h-full flex-col gap-3 p-5">
-      {/* Top bar */}
-      <div className="flex items-center gap-3">
-        <div className="h-7 w-28 rounded-sm" style={{ background: `${color}25` }} />
-        <div className="ml-auto h-7 w-20 rounded-sm" style={{ background: `${color}15` }} />
-      </div>
-      {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-2 pt-1">
-        {["Orders", "Inventory", "Revenue"].map((label) => (
-          <div key={label} className="rounded-sm p-3" style={{ background: `${color}12` }}>
-            <div className="mb-2 h-2 w-10 rounded-full" style={{ background: `${color}40` }} />
-            <div className="h-5 w-14 rounded-sm" style={{ background: `${color}30` }} />
-            <div className="mt-1 font-mono text-[8px] text-white/20 uppercase tracking-wider">{label}</div>
-          </div>
-        ))}
-      </div>
-      {/* Chat bubble — Sous Chef AI */}
-      <div className="mt-auto flex items-end gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full text-[10px]" style={{ background: `${color}30` }}>
-          AI
-        </div>
-        <div className="max-w-[70%] rounded-sm px-3 py-2 font-mono text-[9px] leading-relaxed text-white/40" style={{ background: `${color}15` }}>
-          &quot;Added 12 croissants to Tuesday order&quot;
-        </div>
-      </div>
-      <div className="flex items-center gap-2 rounded-sm border px-3 py-2" style={{ borderColor: `${color}20` }}>
-        <div className="h-2 flex-1 rounded-full" style={{ background: `${color}15` }} />
-        <div className="h-5 w-5 rounded-sm" style={{ background: `${color}30` }} />
-      </div>
-    </div>
+    <video
+      src={src}
+      autoPlay
+      muted
+      loop
+      playsInline
+      className="h-full w-full object-cover"
+    />
   );
 }
 
-function SaaSMockup({ color }: { color: string }) {
-  return (
-    <div className="flex h-full gap-2 p-4">
-      {/* Sidebar */}
-      <div className="flex w-10 flex-col gap-2 pt-2">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-7 w-7 rounded-sm" style={{ background: i === 1 ? `${color}35` : `${color}12` }} />
-        ))}
-      </div>
-      {/* Canvas */}
-      <div className="relative flex-1 rounded-sm" style={{ background: `${color}08` }}>
-        {/* Component blocks */}
-        {[
-          { top: "15%", left: "10%", w: "40%", h: "22%" },
-          { top: "15%", left: "55%", w: "35%", h: "14%" },
-          { top: "48%", left: "10%", w: "25%", h: "30%" },
-          { top: "48%", left: "40%", w: "50%", h: "30%" },
-        ].map((box, i) => (
-          <div
-            key={i}
-            className="absolute rounded-sm border"
-            style={{
-              top: box.top, left: box.left, width: box.w, height: box.h,
-              borderColor: `${color}30`,
-              background: `${color}${i === 0 ? "18" : "0c"}`,
-            }}
-          />
-        ))}
-        {/* Connection lines */}
-        <svg className="absolute inset-0 h-full w-full" style={{ opacity: 0.3 }}>
-          <line x1="30%" y1="37%" x2="30%" y2="48%" stroke={color} strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="62%" y1="29%" x2="62%" y2="48%" stroke={color} strokeWidth="1" strokeDasharray="3 3" />
-        </svg>
-      </div>
-    </div>
-  );
-}
 
 function MLMockup({ color }: { color: string }) {
   const nodes = [
@@ -126,9 +70,9 @@ function MLMockup({ color }: { color: string }) {
     { cx: "85%", cy: "50%" }, // output
   ];
   const edges = [
-    [0,1],[0,2],[0,3],
-    [1,4],[1,5],[2,4],[2,5],[3,4],[3,5],
-    [4,6],[5,6],
+    [0, 1], [0, 2], [0, 3],
+    [1, 4], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5],
+    [4, 6], [5, 6],
   ];
 
   return (
@@ -175,7 +119,6 @@ function MLMockup({ color }: { color: string }) {
   );
 }
 
-const Mockups = [PantryMockup, SaaSMockup, MLMockup];
 
 /* ── Circular visit cursor ──────────────────────────────────── */
 function CircularCursor({ visible, x, y }: { visible: boolean; x: number; y: number }) {
@@ -211,13 +154,13 @@ function CircularCursor({ visible, x, y }: { visible: boolean; x: number; y: num
             textTransform: "uppercase",
           }}
         >
-          <textPath href="#cursorCircle">VISIT PROJECT • VISIT PROJECT •</textPath>
+          <textPath href="#cursorCircle">OPEN PROJECT • OPEN PROJECT •</textPath>
         </text>
       </svg>
-      {/* Center eye */}
+      {/* Center arrow */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm ring-1 ring-white/20">
-          <Eye className="h-4 w-4 text-white" />
+          <ArrowUpRight className="h-4 w-4 text-white" />
         </div>
       </div>
     </div>
@@ -236,21 +179,29 @@ export function Projects() {
 
       const n = projects.length;
 
+      const panels = gsap.utils.toArray<HTMLElement>(".proj-panel", wrapper);
       const contentPanels = gsap.utils.toArray<HTMLElement>(".proj-content", wrapper);
-      const imagePanels   = gsap.utils.toArray<HTMLElement>(".proj-image",   wrapper);
-      const dots          = gsap.utils.toArray<HTMLElement>(".ind-dot",      wrapper);
-      const nums          = gsap.utils.toArray<HTMLElement>(".ind-num",      wrapper);
-      const fillEl        = wrapper.querySelector<HTMLElement>(".ind-fill");
+      const imagePanels = gsap.utils.toArray<HTMLElement>(".proj-image", wrapper);
+      const dots = gsap.utils.toArray<HTMLElement>(".ind-dot", wrapper);
+      const nums = gsap.utils.toArray<HTMLElement>(".ind-num", wrapper);
+      const fillEl = wrapper.querySelector<HTMLElement>(".ind-fill");
 
-      /* Initial state — only panel 0 is visible */
+      /* Initial state — Explicitly lift the first panel using zIndex and autoAlpha */
+      panels.forEach((el, i) => {
+        gsap.set(el, {
+          pointerEvents: i === 0 ? "auto" : "none",
+          zIndex: i === 0 ? 10 : 1 // Active panel stays physically on top
+        });
+      });
       contentPanels.forEach((el, i) => {
-        gsap.set(el, { opacity: i === 0 ? 1 : 0, y: i === 0 ? 0 : 80 });
+        // autoAlpha handles both opacity and visibility: hidden
+        gsap.set(el, { autoAlpha: i === 0 ? 1 : 0, y: i === 0 ? 0 : 80 });
       });
       imagePanels.forEach((el, i) => {
-        gsap.set(el, { opacity: i === 0 ? 1 : 0, scale: i === 0 ? 1 : 0.94 });
+        gsap.set(el, { autoAlpha: i === 0 ? 1 : 0, scale: i === 0 ? 1 : 0.94 });
       });
       gsap.set(dots[0], { backgroundColor: projects[0].colorRaw, scale: 1.6 });
-      gsap.set(fillEl, { height: "0%" });
+      if (fillEl) gsap.set(fillEl, { height: "0%" });
 
       /* Master scrub timeline */
       const tl = gsap.timeline({
@@ -262,30 +213,29 @@ export function Projects() {
         },
       });
 
-      /*
-       * Timeline units: total = n (1 unit dwell per project)
-       *   project i occupies [i, i+1]
-       *   transition i→i+1 happens at i+0.35 … i+0.65
-       */
       for (let i = 0; i < n - 1; i++) {
-        const outStart  = i + 0.3;
-        const inStart   = i + 0.55;
-        const fillPct   = ((i + 1) / (n - 1)) * 100;
+        const outStart = i + 0.3;
+        const inStart = i + 0.55;
+        const fillPct = ((i + 1) / (n - 1)) * 100;
 
-        // out
-        tl.to(contentPanels[i], { opacity: 0, y: -80, duration: 0.3 }, outStart);
-        tl.to(imagePanels[i],   { opacity: 0, scale: 1.04, duration: 0.25 }, outStart);
+        // out - shift inactive panels to the back
+        tl.to(contentPanels[i], { autoAlpha: 0, y: -80, duration: 0.3 }, outStart);
+        tl.to(imagePanels[i], { autoAlpha: 0, scale: 1.04, duration: 0.25 }, outStart);
+        tl.set(panels[i], { pointerEvents: "none", zIndex: 1 }, outStart);
 
         // fill + dot
-        tl.to(fillEl,    { height: `${fillPct}%`, duration: 0.35, ease: "power2.inOut" }, outStart);
-        tl.to(dots[i],   { scale: 0.8, opacity: 0.4, duration: 0.25 }, outStart);
-        tl.to(nums[i],   { opacity: 0.2, duration: 0.25 }, outStart);
+        if (fillEl) {
+          tl.to(fillEl, { height: `${fillPct}%`, duration: 0.35, ease: "power2.inOut" }, outStart);
+        }
+        tl.to(dots[i], { scale: 0.8, opacity: 0.4, duration: 0.25 }, outStart);
+        tl.to(nums[i], { opacity: 0.2, duration: 0.25 }, outStart);
         tl.to(dots[i + 1], { backgroundColor: projects[i + 1].colorRaw, scale: 1.6, duration: 0.3 }, inStart);
         tl.to(nums[i + 1], { opacity: 1, color: projects[i + 1].colorRaw, duration: 0.3 }, inStart);
 
-        // in
-        tl.to(contentPanels[i + 1], { opacity: 1, y: 0, duration: 0.35 }, inStart);
-        tl.to(imagePanels[i + 1],   { opacity: 1, scale: 1, duration: 0.35 }, inStart);
+        // in - pull active panel to the front
+        tl.set(panels[i + 1], { pointerEvents: "auto", zIndex: 10 }, inStart);
+        tl.to(contentPanels[i + 1], { autoAlpha: 1, y: 0, duration: 0.35 }, inStart);
+        tl.to(imagePanels[i + 1], { autoAlpha: 1, scale: 1, duration: 0.35 }, inStart);
 
         // padding dwell at end of each project
         tl.to({}, { duration: 0.3 }, i + 1);
@@ -298,7 +248,7 @@ export function Projects() {
 
   /* Indicator track height = gap between first and last dot */
   const DOT_GAP = 72; // px between dots
-  const trackH  = (projects.length - 1) * DOT_GAP;
+  const trackH = (projects.length - 1) * DOT_GAP;
 
   return (
     /* Scroll space: one viewport per project */
@@ -379,10 +329,9 @@ export function Projects() {
         </div>
 
         {/* ── Project panels ── */}
-        {projects.map((p, i) => {
-          const MockupComponent = Mockups[i];
+        {projects.map((p) => {
           return (
-            <div key={p.title} className="absolute inset-0 grid grid-cols-2">
+            <div key={p.title} className="proj-panel absolute inset-0 grid grid-cols-2">
 
               {/* Left — content */}
               <div className="proj-content flex flex-col justify-center pl-24 pr-12 pt-28">
@@ -415,14 +364,23 @@ export function Projects() {
                 <div className="flex items-center gap-8">
                   <a
                     href={p.link}
-                    className="group/lnk flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-foreground/40 transition-colors duration-200 hover:text-foreground"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/lnk flex cursor-pointer items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-foreground/40 transition-colors duration-200 hover:text-foreground"
+                    style={{ ["--hover-color" as string]: p.colorRaw }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = p.colorRaw)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "")}
                   >
                     Live
                     <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/lnk:-translate-y-0.5 group-hover/lnk:translate-x-0.5" />
                   </a>
                   <a
                     href={p.github}
-                    className="group/lnk flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-foreground/40 transition-colors duration-200 hover:text-foreground"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/lnk flex cursor-pointer items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-foreground/40 transition-colors duration-200 hover:text-foreground"
+                    onMouseEnter={(e) => (e.currentTarget.style.color = p.colorRaw)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "")}
                   >
                     GitHub
                     <Github className="h-3.5 w-3.5" />
@@ -444,13 +402,16 @@ export function Projects() {
                   }}
                 />
 
-                {/* Mockup window */}
-                <div
-                  className="relative z-10 w-[70%] overflow-hidden rounded-sm border"
+                {/* Mockup window — clicks open live link */}
+                <a
+                  href={p.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative z-10 block w-[92%] overflow-hidden rounded-sm border transition-all duration-300 hover:border-opacity-60"
                   style={{
                     borderColor: `${p.colorRaw}30`,
                     background: `linear-gradient(160deg, #0e1620 0%, ${p.colorRaw}0a 100%)`,
-                    aspectRatio: "16/10",
+                    aspectRatio: "16/9",
                   }}
                 >
                   {/* Browser chrome */}
@@ -472,8 +433,11 @@ export function Projects() {
                   </div>
 
                   {/* Dynamic mockup content */}
-                  <MockupComponent color={p.colorRaw} />
-                </div>
+                  {p.videoSrc
+                    ? <VideoMockup src={p.videoSrc} />
+                    : <MLMockup color={p.colorRaw} />
+                  }
+                </a>
 
                 {/* Corner label */}
                 <div className="absolute bottom-8 right-8 text-right">

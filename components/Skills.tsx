@@ -226,12 +226,12 @@ export function Skills() {
             >
               <div>
                 <div
-                  className="font-mono text-[8px] uppercase tracking-[0.35em]"
-                  style={{ color: `${row.color}70` }}
+                  className="font-mono text-[9px] uppercase tracking-[0.35em]"
+                  style={{ color: `${row.color}cc` }}
                 >
                   {row.num}
                 </div>
-                <div className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/25">
+                <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
                   {row.label}
                 </div>
               </div>

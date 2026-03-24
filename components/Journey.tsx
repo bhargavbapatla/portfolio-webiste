@@ -16,64 +16,56 @@ gsap.registerPlugin(ScrollTrigger);
 
 const milestones = [
   {
-    year: "2020",
-    num: "01",
-    title: "Hello World",
-    category: "The Beginning",
-    desc: "Wrote my very first lines of code. Started exploring the fundamentals of web development and programming logic — the spark that set everything in motion.",
-    color: "#007ae5",
-  },
-  {
     year: "2021",
-    num: "02",
+    num: "01",
     title: "Engineering\nFundamentals",
     category: "Academia · VIIT",
-    desc: "Enrolled in B.Tech at VIIT. Dove deep into Data Structures, Algorithms, and core computer science — building the mental models that underpin everything I build.",
+    desc: "Pursued B.Tech in E&TC at VIIT (8.30 CGPA). Built a strong foundation in DSA, OS, and computer science fundamentals — the mental models behind everything I ship.",
     color: "#6ea8fe",
   },
   {
     year: "2022",
-    num: "03",
-    title: "The React\nEcosystem",
-    category: "Frontend Mastery",
-    desc: "Fell in love with React.js. Built multiple frontend modules, mastered state management, and explored Next.js — finding my primary medium of expression.",
+    num: "02",
+    title: "First Industry\nExposure",
+    category: "Internship · Cognizant",
+    desc: "Interned at Cognizant — integrated in-browser code editors, implemented lazy loading to cut page loads by 40%, and drove 20% re-engagement via push notifications and deep linking.",
     color: "#a78bfa",
   },
   {
     year: "2023",
-    num: "04",
-    title: "Professional\nImpact",
+    num: "03",
+    title: "Scaling\nProducts",
     category: "Industry · Invimatic",
-    desc: "Joined Invimatic Technologies as a frontend engineer. Architected Low-Code/No-Code SaaS platforms, replaced polling with Redis Webhooks, and cut server requests by 60%.",
+    desc: "Architected a Low-Code/No-Code SaaS platform with React and TypeScript. Built real-time chat via Redis Webhooks, cut query latency by 50% with Cube.js, and drove 15% monetization growth.",
     color: "#eb6110",
   },
   {
-    year: "2024",
-    num: "05",
+    year: "2026",
+    num: "04",
     title: "The AI\nFrontier",
-    category: "AI Engineering",
-    desc: "Transitioned into AI Engineering. Building agentic systems with LangChain, Gemini, and voice integrations — orchestrating intelligence, not just interfaces.",
+    category: "AI · Full-Stack",
+    desc: "Building agentic systems — shipped Sous Chef AI with Gemini and ElevenLabs for voice-driven database ops. Exploring RAG pipelines, Vision Transformers, and LangChain orchestration.",
     color: "#c9a8f0",
   },
 ];
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as const;
-const EASE_IN  = [0.55, 0, 0.78, 0] as const;
+const EASE_IN = [0.55, 0, 0.78, 0] as const;
 
 const leftVariants = {
-  enter:  { opacity: 0, y: 32 },
-  center: { opacity: 1, y: 0,  transition: { duration: 0.55, ease: EASE_OUT } },
-  exit:   { opacity: 0, y: -32, transition: { duration: 0.3,  ease: EASE_IN  } },
+  enter: { opacity: 0, y: 32 },
+  center: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+  exit: { opacity: 0, y: -32, transition: { duration: 0.3, ease: EASE_IN } },
 };
 
 const rightVariants = {
-  enter:  { opacity: 0, y: 40 },
-  center: { opacity: 1, y: 0,  transition: { duration: 0.6,  ease: EASE_OUT, delay: 0.08 } },
-  exit:   { opacity: 0, y: -40, transition: { duration: 0.28, ease: EASE_IN  } },
+  enter: { opacity: 0, y: 40 },
+  center: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT, delay: 0.08 } },
+  exit: { opacity: 0, y: -40, transition: { duration: 0.28, ease: EASE_IN } },
 };
 
 export function Journey() {
-  const pinnedRef  = useRef<HTMLDivElement>(null);
+  const pinnedRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   /* ── Mouse parallax for ghost year ──────────────────────────────── */
@@ -81,8 +73,8 @@ export function Journey() {
   const mouseY = useMotionValue(0.5);
   const springX = useSpring(mouseX, { stiffness: 28, damping: 22 });
   const springY = useSpring(mouseY, { stiffness: 28, damping: 22 });
-  const ghostX  = useTransform(springX, [0, 1], [-28, 28]);
-  const ghostY  = useTransform(springY, [0, 1], [-14, 14]);
+  const ghostX = useTransform(springX, [0, 1], [-28, 28]);
+  const ghostY = useTransform(springY, [0, 1], [-14, 14]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -90,7 +82,7 @@ export function Journey() {
       if (!el) return;
       const rect = el.getBoundingClientRect();
       mouseX.set((e.clientX - rect.left) / rect.width);
-      mouseY.set((e.clientY - rect.top)  / rect.height);
+      mouseY.set((e.clientY - rect.top) / rect.height);
     },
     [mouseX, mouseY]
   );
@@ -230,9 +222,9 @@ export function Journey() {
                   <motion.div
                     className="absolute inset-y-0 left-0 h-full"
                     animate={{
-                      width:           i <= activeIndex ? "100%" : "0%",
+                      width: i <= activeIndex ? "100%" : "0%",
                       backgroundColor: ms.color,
-                      opacity:         i < activeIndex ? 0.35 : 1,
+                      opacity: i < activeIndex ? 0.35 : 1,
                     }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   />
@@ -350,10 +342,10 @@ export function Journey() {
               key={i}
               className="rounded-full"
               animate={{
-                width:           i === activeIndex ? 5 : 3,
-                height:          i === activeIndex ? 5 : 3,
+                width: i === activeIndex ? 5 : 3,
+                height: i === activeIndex ? 5 : 3,
                 backgroundColor: i === activeIndex ? ms.color : "rgba(245,244,223,0.18)",
-                boxShadow:       i === activeIndex ? `0 0 8px ${ms.color}aa` : "none",
+                boxShadow: i === activeIndex ? `0 0 8px ${ms.color}aa` : "none",
               }}
               transition={{ duration: 0.3 }}
             />
