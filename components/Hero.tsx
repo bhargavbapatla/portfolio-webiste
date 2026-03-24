@@ -316,7 +316,7 @@ function HeroCanvas({ onExplode }: { onExplode: () => void }) {
           { s: 0.34, baseAlpha: 0.18, lw: 0.7 },
         ];
         for (const ring of rings) {
-          const rt = Math.min(1, t * ring.s * 1.5);
+          const rt = Math.max(0, Math.min(1, t * ring.s * 1.5));
           const r  = rt * maxR;
           const a  = ring.baseAlpha * (1 - rt);
           if (a < 0.005) continue;

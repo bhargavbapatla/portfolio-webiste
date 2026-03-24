@@ -3,7 +3,8 @@
     "allow": [
       "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
       "WebFetch(domain:www.jobyaviation.com)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const {Draggable} = require\\(''''gsap/Draggable''''\\); console.log\\(typeof Draggable\\)\")"
     ]
   }
 }

@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
-const skillGroups = [
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const rows = [
   {
-    category: "Frontend",
-    color: "var(--color-blue)",
-    items: [
+    id: "frontend",
+    num: "01",
+    label: "Frontend Engineering",
+    color: "#007ae5",
+    reverse: false,
+    duration: 38,
+    skills: [
       { name: "React.js", level: 95 },
       { name: "TypeScript", level: 92 },
       { name: "Next.js", level: 88 },
@@ -17,188 +22,234 @@ const skillGroups = [
     ],
   },
   {
-    category: "AI & Backend",
-    color: "var(--color-pink)",
-    items: [
-      { name: "LangChain / LangGraph", level: 85 },
-      { name: "Node.js / Express", level: 88 },
-      { name: "FastAPI / Django", level: 80 },
+    id: "ai",
+    num: "02",
+    label: "AI & Backend Systems",
+    color: "#c9a8f0",
+    reverse: true,
+    duration: 44,
+    skills: [
+      { name: "LangChain", level: 85 },
+      { name: "LangGraph", level: 82 },
+      { name: "Node.js", level: 88 },
+      { name: "FastAPI", level: 80 },
       { name: "RAG Pipelines", level: 82 },
-      { name: "n8n Workflows", level: 78 },
-      { name: "Google Gemini LLM", level: 83 },
+      { name: "Google Gemini", level: 83 },
     ],
   },
   {
-    category: "Data & Infra",
-    color: "var(--color-orange)",
-    items: [
+    id: "data",
+    num: "03",
+    label: "Data & Infrastructure",
+    color: "#eb6110",
+    reverse: false,
+    duration: 34,
+    skills: [
       { name: "PostgreSQL", level: 85 },
       { name: "Redis", level: 78 },
-      { name: "MongoDB / Firebase", level: 80 },
-      { name: "Pinecone / ChromaDB", level: 75 },
+      { name: "MongoDB", level: 80 },
+      { name: "Pinecone", level: 75 },
       { name: "Docker", level: 76 },
-      { name: "Cube.js Analytics", level: 80 },
+      { name: "Cube.js", level: 80 },
     ],
   },
   {
-    category: "Tools & More",
-    color: "var(--color-grey)",
-    items: [
+    id: "tools",
+    num: "04",
+    label: "Tools & Ecosystem",
+    color: "#94a3b8",
+    reverse: true,
+    duration: 40,
+    skills: [
       { name: "Git / GitHub", level: 92 },
-      { name: "TensorFlow / Keras", level: 78 },
-      { name: "Stripe Integration", level: 82 },
-      { name: "Twilio / WhatsApp API", level: 80 },
-      { name: "Cursor / Claude Code", level: 88 },
+      { name: "TensorFlow", level: 78 },
+      { name: "Stripe API", level: 82 },
+      { name: "Twilio / WAPI", level: 80 },
+      { name: "Claude Code", level: 88 },
       { name: "Figma", level: 75 },
     ],
   },
 ];
 
-const marqueeWords = [
-  "React", "TypeScript", "LangChain", "Next.js", "FastAPI",
-  "RAG", "Redis", "PostgreSQL", "Docker", "TensorFlow",
-  "React Native", "LangGraph", "Stripe", "Node.js", "Gemini",
+const stats = [
+  { value: "24", label: "Technologies" },
+  { value: "4", label: "Domains" },
+  { value: "5+", label: "Years Building" },
+  { value: "60%", label: "Server Load Cut" },
 ];
 
 export function Skills() {
-  const [activeGroup, setActiveGroup] = useState(0);
-
   return (
-    <section id="skills" className="relative overflow-hidden py-40 px-8">
-      {/* top divider */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-px w-full -translate-x-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <section id="skills" className="relative overflow-hidden bg-background py-32 md:py-40">
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        {/* Label */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="mb-20 flex items-center gap-4"
-        >
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-blue">
-            04 — Skills
-          </span>
-          <div className="h-px flex-1 bg-dark-blue-ui/50 max-w-xs" />
-        </motion.div>
+      {/* CSS keyframes */}
+      <style>{`
+        @keyframes ticker {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        .ticker-track {
+          display: flex;
+          width: max-content;
+          will-change: transform;
+        }
+        .ticker-track--normal  { animation: ticker linear infinite; }
+        .ticker-track--reverse { animation: ticker linear infinite reverse; }
+        .ticker-row:hover .ticker-track { animation-play-state: paused; }
+      `}</style>
 
-        {/* Heading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16 text-[clamp(40px,6vw,80px)] font-black leading-[0.92] tracking-tight text-foreground"
-        >
-          Technical
-          <br />
-          <span
-            className="text-transparent"
-            style={{ WebkitTextStroke: "1px rgba(245,244,223,0.13)" }}
-          >
-            Arsenal
-          </span>
-        </motion.h2>
+      {/* Top ambient rule */}
+      <div className="pointer-events-none absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-        {/* Tab selector */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-12 flex flex-wrap gap-2"
-        >
-          {skillGroups.map((g, i) => (
-            <button
-              key={g.category}
-              onClick={() => setActiveGroup(i)}
-              className="relative px-5 py-2.5 font-mono text-xs uppercase tracking-widest transition-all duration-300"
-              style={{
-                color: activeGroup === i ? "#000" : "rgba(245,244,223,0.4)",
-                clipPath:
-                  "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))",
-                background:
-                  activeGroup === i ? g.color : "rgba(245,244,223,0.03)",
-                border: activeGroup === i ? "none" : "1px solid rgba(245,244,223,0.06)",
-              }}
-            >
-              {g.category}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* Skill bars panel */}
-        <AnimatePresence mode="wait">
+      {/* ── Section Header ─────────────────────────────────────────────────── */}
+      <div className="px-6 pb-16 md:px-12">
+        <div className="mx-auto max-w-7xl">
           <motion.div
-            key={activeGroup}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.35 }}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="mb-4 flex items-center gap-4"
           >
-            {skillGroups[activeGroup].items.map((skill, i) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="group border border-white/5 bg-white/[0.015] p-5 transition-colors duration-300 hover:border-dark-blue-ui/50"
-                style={{
-                  clipPath:
-                    "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))",
-                }}
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="font-mono text-xs text-foreground/70 group-hover:text-foreground transition-colors duration-300">
-                    {skill.name}
-                  </span>
-                  <span
-                    className="font-mono text-[10px]"
-                    style={{ color: skillGroups[activeGroup].color }}
-                  >
-                    {skill.level}%
-                  </span>
-                </div>
-                <div className="h-[2px] w-full bg-dark-blue-ui/50">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${skill.level}%` }}
-                    transition={{ duration: 0.9, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                    className="h-full"
-                    style={{
-                      background: `linear-gradient(90deg, ${skillGroups[activeGroup].color}, ${skillGroups[activeGroup].color}80)`,
-                    }}
-                  />
-                </div>
-              </motion.div>
-            ))}
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-blue">
+              04 — Skills
+            </span>
+            <div className="h-px w-16 bg-dark-blue-ui/50" />
           </motion.div>
-        </AnimatePresence>
 
-        {/* Marquee */}
-        <div className="relative mt-24 overflow-hidden border-t border-b border-dark-blue-ui/50 py-6">
-          <div className="flex gap-12 whitespace-nowrap"
-            style={{ animation: "marquee 28s linear infinite" }}
-          >
-            {[...marqueeWords, ...marqueeWords].map((word, i) => (
+          <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="text-[clamp(40px,6vw,80px)] font-black leading-[0.9] tracking-tight"
+            >
+              Technical
+              <br />
               <span
-                key={i}
-                className="flex items-center gap-12 font-mono text-xs uppercase tracking-[0.3em] text-foreground/20"
+                className="text-transparent"
+                style={{ WebkitTextStroke: "1px rgba(245,244,223,0.12)" }}
               >
-                {word}
-                <span className="text-blue/30">◆</span>
+                Stack.
               </span>
-            ))}
+            </motion.h2>
+
+            {/* Stat row — top right */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
+              className="flex shrink-0 gap-8 md:gap-10"
+            >
+              {stats.map((s) => (
+                <div key={s.label} className="flex flex-col gap-1">
+                  <span className="font-display text-2xl font-black leading-none text-foreground md:text-3xl">
+                    {s.value}
+                  </span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-foreground/30">
+                    {s.label}
+                  </span>
+                </div>
+              ))}
+            </motion.div>
           </div>
-          <style>{`
-            @keyframes marquee {
-              from { transform: translateX(0); }
-              to { transform: translateX(-50%); }
-            }
-          `}</style>
         </div>
       </div>
+
+      {/* ── Marquee Strips ──────────────────────────────────────────────────── */}
+      <div className="flex flex-col">
+        {rows.map((row, rowIndex) => (
+          <motion.div
+            key={row.id}
+            initial={{ opacity: 0, x: row.reverse ? 48 : -48 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-8%" }}
+            transition={{ duration: 0.65, delay: rowIndex * 0.08, ease: EASE }}
+            className="ticker-row relative overflow-hidden"
+            style={{
+              borderTop: `1px solid ${row.color}15`,
+              borderBottom: rowIndex === rows.length - 1 ? `1px solid ${row.color}15` : "none",
+            }}
+          >
+            {/* Scrolling track — duplicated 4× for seamless infinity */}
+            <div
+              className={`ticker-track ${row.reverse ? "ticker-track--reverse" : "ticker-track--normal"}`}
+              style={{ animationDuration: `${row.duration}s` }}
+            >
+              {Array.from({ length: 4 }, (_, copyIndex) =>
+                row.skills.map((skill, i) => (
+                  <div
+                    key={`${copyIndex}-${i}`}
+                    className="mx-3 my-4 flex shrink-0 items-center gap-3 rounded-full border px-5 py-2.5 transition-colors duration-300 hover:border-opacity-60"
+                    style={{
+                      borderColor: `${row.color}22`,
+                      backgroundColor: `${row.color}${Math.round(6 + (skill.level - 75) / 20 * 8).toString(16).padStart(2, "0")}`,
+                    }}
+                  >
+                    {/* Colored dot — size proportional to proficiency */}
+                    <div
+                      className="rounded-full shrink-0"
+                      style={{
+                        width:  skill.level >= 90 ? "7px" : skill.level >= 80 ? "6px" : "5px",
+                        height: skill.level >= 90 ? "7px" : skill.level >= 80 ? "6px" : "5px",
+                        backgroundColor: row.color,
+                        opacity: 0.7 + (skill.level - 75) / 100,
+                      }}
+                    />
+                    <span
+                      className="font-mono text-sm whitespace-nowrap"
+                      style={{
+                        color: `rgba(245,244,223,${0.45 + (skill.level - 75) / 100})`,
+                      }}
+                    >
+                      {skill.name}
+                    </span>
+                    <span
+                      className="font-mono text-[10px] tabular-nums"
+                      style={{ color: `${row.color}55` }}
+                    >
+                      {skill.level}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Left label + fade */}
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-6 md:pl-12"
+              style={{
+                width: "220px",
+                background: "linear-gradient(to right, var(--background) 60%, transparent)",
+              }}
+            >
+              <div>
+                <div
+                  className="font-mono text-[8px] uppercase tracking-[0.35em]"
+                  style={{ color: `${row.color}70` }}
+                >
+                  {row.num}
+                </div>
+                <div className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/25">
+                  {row.label}
+                </div>
+              </div>
+            </div>
+
+            {/* Right fade */}
+            <div
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 md:w-32"
+              style={{
+                background: "linear-gradient(to left, var(--background) 40%, transparent)",
+              }}
+            />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* ── Bottom ambient rule ─────────────────────────────────────────────── */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
     </section>
   );
 }
