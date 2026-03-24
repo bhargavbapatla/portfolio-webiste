@@ -106,7 +106,7 @@ export function About() {
   }, { scope: containerRef });
 
   return (
-    <section id="about" className="relative overflow-hidden py-40 px-8">
+    <section id="about" className="relative overflow-hidden py-20 px-4 md:py-40 md:px-8">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute -right-64 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-pink/5 blur-[120px]" />
 
@@ -119,7 +119,7 @@ export function About() {
           <div className="h-px flex-1 bg-dark-blue-ui/50 max-w-xs" />
         </div>
 
-        <div className="grid gap-24 lg:grid-cols-[1fr_420px] lg:items-start relative">
+        <div className="grid gap-16 md:gap-24 lg:grid-cols-[1fr_420px] lg:items-start relative">
           {/* Left — text */}
           <div ref={leftRef} className="lg:pr-10">
             <h2 className="about-heading text-[clamp(40px,6vw,80px)] font-black leading-[0.95] tracking-tight text-foreground">
@@ -166,11 +166,9 @@ export function About() {
               ].map((s, i) => (
                 <div
                   key={s.label}
-                  className={`stat-item px-8 py-6 ${i < 2 ? "border-r border-dark-blue-ui/50" : ""}`}
+                  className={`stat-item px-4 py-5 md:px-8 md:py-6 ${i < 2 ? "border-r border-dark-blue-ui/50" : ""}`}
                 >
-                  <div
-                    className="text-4xl font-black text-foreground"
-                  >
+                  <div className="text-2xl md:text-4xl font-black text-foreground">
                     {s.num}
                   </div>
                   <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/50">

@@ -610,7 +610,7 @@ export function Hero() {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, delay: 0.08 }}
-        className="relative z-10 flex items-center justify-between px-8 pt-28 md:px-14"
+        className="relative z-10 flex items-center justify-between px-5 pt-20 md:px-14 md:pt-28"
       >
         <div className="flex items-center gap-3">
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-blue">
@@ -703,7 +703,7 @@ export function Hero() {
 
       {/* ── Bottom bar ───────────────────────────────────────────── */}
       <motion.div
-        className="relative z-10 flex items-center justify-between px-8 pb-10 md:px-14"
+        className="relative z-10 flex items-center justify-between px-5 pb-8 md:px-14 md:pb-10"
         {...fadeUp(1.7)}
       >
         <div className="flex items-center gap-10 border-t border-dark-blue-ui/50 pt-7 w-full">
@@ -714,7 +714,7 @@ export function Hero() {
             { num: "98", label: "Lighthouse" },
           ].map((s, i) => (
             <div key={s.label} className={`flex flex-col gap-0.5 ${i > 1 ? "hidden sm:flex" : ""}`}>
-              <span className="font-display text-3xl font-black text-foreground leading-none drop-shadow-sm">
+              <span className="font-display text-2xl font-black text-foreground leading-none drop-shadow-sm md:text-3xl">
                 {s.num}
               </span>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-blue/70">

@@ -107,16 +107,16 @@ type FormErrors = { name: string; email: string; subject: string; message: strin
 
 function validate(v: FormValues): FormErrors {
   const e: FormErrors = { name: "", email: "", subject: "", message: "" };
-  if (!v.name.trim())                    e.name    = "Name is required";
-  else if (v.name.trim().length < 2)     e.name    = "At least 2 characters";
+  if (!v.name.trim()) e.name = "Name is required";
+  else if (v.name.trim().length < 2) e.name = "At least 2 characters";
 
-  if (!v.email.trim())                   e.email   = "Email is required";
+  if (!v.email.trim()) e.email = "Email is required";
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = "Enter a valid email";
 
-  if (!v.subject.trim())                 e.subject = "Subject is required";
-  else if (v.subject.trim().length < 3)  e.subject = "At least 3 characters";
+  if (!v.subject.trim()) e.subject = "Subject is required";
+  else if (v.subject.trim().length < 3) e.subject = "At least 3 characters";
 
-  if (!v.message.trim())                 e.message = "Message is required";
+  if (!v.message.trim()) e.message = "Message is required";
   else if (v.message.trim().length < 10) e.message = "At least 10 characters";
   return e;
 }
@@ -274,7 +274,7 @@ export function Contact() {
       <div className="pointer-events-none absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* ── HERO HEADER ───────────────────────────────────────────────── */}
-      <div className="relative border-b border-dark-blue-ui/30 px-6 pb-20 pt-36 md:px-12">
+      <div className="relative border-b border-dark-blue-ui/30 px-6 pb-14 pt-24 md:px-12 md:pb-20 md:pt-36">
         {/* Left ambient glow */}
         <div
           className="pointer-events-none absolute bottom-0 left-0 h-[600px] w-[800px] -translate-x-1/4 opacity-25"
@@ -629,17 +629,7 @@ export function Contact() {
         </div>
       </div>
 
-      {/* ── FOOTER STRIP ─────────────────────────────────────────────── */}
-      <div className="border-t border-dark-blue-ui/30 px-6 py-7 md:px-12">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-foreground/20">
-            © Krishna Bhargav · 2026
-          </span>
-          <span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/15 md:block">
-            Built with Next.js · Framer Motion · GSAP
-          </span>
-        </div>
-      </div>
+
     </section>
   );
 }

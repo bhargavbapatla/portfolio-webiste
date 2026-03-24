@@ -246,7 +246,7 @@ export function Journey() {
         {/* ── Main content grid ───────────────────────────────────────── */}
         <div className="absolute inset-0 flex items-center px-6 md:px-12">
           <div className="mx-auto w-full max-w-7xl">
-            <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-[5fr_1px_7fr]">
+            <div className="grid grid-cols-1 items-center gap-6 md:gap-10 md:grid-cols-[5fr_1px_7fr]">
 
               {/* Left: category + year + counter */}
               <AnimatePresence mode="wait">
@@ -256,7 +256,7 @@ export function Journey() {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  className="flex flex-col justify-center md:pr-16"
+                  className="hidden md:flex flex-col justify-center md:pr-16"
                 >
                   {/* Category tag */}
                   <span

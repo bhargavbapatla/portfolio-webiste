@@ -265,7 +265,7 @@ export function Projects() {
         <div className="pointer-events-none absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         {/* ── Section header ── */}
-        <div className="absolute left-24 top-14 z-20">
+        <div className="absolute left-4 top-4 z-20 md:left-24 md:top-14">
           <div className="mb-3 flex items-center gap-4">
             <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-blue">
               03 — Work
@@ -285,7 +285,7 @@ export function Projects() {
         </div>
 
         {/* ── Lateral pin indicator ── */}
-        <div className="absolute left-8 top-1/2 z-20 -translate-y-1/2">
+        <div className="absolute left-8 top-1/2 z-20 -translate-y-1/2 hidden md:block">
           <div className="relative flex flex-col items-center" style={{ height: `${trackH + 8}px` }}>
 
             {/* Background track */}
@@ -331,10 +331,10 @@ export function Projects() {
         {/* ── Project panels ── */}
         {projects.map((p) => {
           return (
-            <div key={p.title} className="proj-panel absolute inset-0 grid grid-cols-2">
+            <div key={p.title} className="proj-panel absolute inset-0 grid grid-cols-1 md:grid-cols-2">
 
               {/* Left — content */}
-              <div className="proj-content flex flex-col justify-center pl-24 pr-12 pt-28">
+              <div className="proj-content flex flex-col justify-center px-5 pt-28 pb-6 md:pl-24 md:pr-12 md:pt-28 md:pb-0">
                 <span
                   className="mb-5 font-mono text-[10px] uppercase tracking-[0.3em]"
                   style={{ color: p.colorRaw }}
@@ -390,7 +390,7 @@ export function Projects() {
 
               {/* Right — mockup */}
               <div
-                className="proj-image relative flex items-center justify-center overflow-hidden cursor-none"
+                className="proj-image relative hidden md:flex items-center justify-center overflow-hidden cursor-none"
                 onMouseMove={(e) => setCursor({ visible: true, x: e.clientX, y: e.clientY })}
                 onMouseLeave={() => setCursor((s) => ({ ...s, visible: false }))}
               >
@@ -442,8 +442,8 @@ export function Projects() {
                 {/* Corner label */}
                 <div className="absolute bottom-8 right-8 text-right">
                   <span
-                    className="font-display text-[80px] font-black leading-none"
-                    style={{ color: `${p.colorRaw}10` }}
+                    className="font-display font-black leading-none"
+                    style={{ fontSize: "clamp(40px, 8vw, 80px)", color: `${p.colorRaw}10` }}
                   >
                     {p.num}
                   </span>

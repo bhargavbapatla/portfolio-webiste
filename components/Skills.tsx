@@ -220,7 +220,7 @@ export function Skills() {
             <div
               className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-6 md:pl-12"
               style={{
-                width: "220px",
+                width: "clamp(100px, 28vw, 220px)",
                 background: "linear-gradient(to right, var(--background) 60%, transparent)",
               }}
             >
