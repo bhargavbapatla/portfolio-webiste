@@ -633,13 +633,13 @@ export function Hero() {
           animate="show"
           className="flex flex-col items-center"
         >
-          <div className="overflow-hidden leading-[0.9] pb-4">
+          <div className="overflow-hidden leading-[0.9] pb-4 px-2">
             <motion.div variants={lineReveal}>
               <ScrambleText text="KRISHNA" />
             </motion.div>
           </div>
 
-          <div className="overflow-hidden leading-[0.9] pb-4">
+          <div className="overflow-hidden leading-[0.9] pb-4 px-2">
             <motion.div variants={lineReveal}>
               <ScrambleText text="BHARGAV" isOutline />
             </motion.div>

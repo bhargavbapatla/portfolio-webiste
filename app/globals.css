@@ -99,6 +99,12 @@ body {
   outline-offset: 3px;
 }
 
+/* Form fields use animated underlines as focus indicator — no outline needed */
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
 /* ── Lenis smooth scroll classes ─────────────────────────────── */
 html.lenis,
 html.lenis body {

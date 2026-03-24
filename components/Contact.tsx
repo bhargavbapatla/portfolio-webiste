@@ -101,23 +101,55 @@ function LiveClock() {
   );
 }
 
+/* ── Validation ──────────────────────────────────────────────────────── */
+type FormValues = { name: string; email: string; subject: string; message: string };
+type FormErrors = { name: string; email: string; subject: string; message: string };
+
+function validate(v: FormValues): FormErrors {
+  const e: FormErrors = { name: "", email: "", subject: "", message: "" };
+  if (!v.name.trim())                    e.name    = "Name is required";
+  else if (v.name.trim().length < 2)     e.name    = "At least 2 characters";
+
+  if (!v.email.trim())                   e.email   = "Email is required";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = "Enter a valid email";
+
+  if (!v.subject.trim())                 e.subject = "Subject is required";
+  else if (v.subject.trim().length < 3)  e.subject = "At least 3 characters";
+
+  if (!v.message.trim())                 e.message = "Message is required";
+  else if (v.message.trim().length < 10) e.message = "At least 10 characters";
+  return e;
+}
+
 /* ── Underline animated form field ──────────────────────────────────── */
 function Field({
   id,
   label,
   type,
   placeholder,
+  value,
+  onChange,
+  onTouched,
   focused,
   setFocused,
+  error,
+  touched,
 }: {
   id: string;
   label: string;
   type: string;
   placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  onTouched: (id: string) => void;
   focused: string | null;
   setFocused: (v: string | null) => void;
+  error: string;
+  touched: boolean;
 }) {
   const active = focused === id;
+  const showError = touched && !!error;
+
   return (
     <div className="flex flex-col gap-2.5">
       <label
@@ -132,27 +164,37 @@ function Field({
           name={id}
           type={type}
           placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(id)}
-          onBlur={() => setFocused(null)}
-          /* Tell browsers and extensions to back off */
+          onBlur={() => { setFocused(null); onTouched(id); }}
           spellCheck={false}
           autoComplete="off"
           data-gramm="false"
           data-gramm_editor="false"
           data-enable-grammarly="false"
-          /* The ultimate CSS nuke for native styles */
           className="w-full border-0 bg-transparent pb-3 font-mono text-sm text-foreground placeholder-foreground/20 outline-none focus:outline-none focus:ring-0 focus:border-transparent shadow-none appearance-none"
         />
         {/* Static underline rail */}
         <div className="absolute bottom-0 left-0 h-px w-full bg-dark-blue-ui/60" />
-        {/* Animated fill */}
+        {/* Animated fill — red on error, blue otherwise */}
         <motion.div
           className="absolute bottom-0 left-0 h-px"
-          style={{ backgroundColor: "var(--color-blue)" }}
-          animate={{ width: active ? "100%" : "0%" }}
+          style={{ backgroundColor: showError ? "#ef4444" : "var(--color-blue)" }}
+          animate={{ width: active || showError ? "100%" : "0%" }}
           transition={{ duration: 0.35, ease: "easeOut" }}
         />
       </div>
+      {showError && (
+        <motion.span
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="font-mono text-[9px] tracking-wide"
+          style={{ color: "#ef4444bb" }}
+        >
+          {error}
+        </motion.span>
+      )}
     </div>
   );
 }
@@ -161,21 +203,48 @@ function Field({
 export function Contact() {
   const [focused, setFocused] = useState<string | null>(null);
   const [messageFocused, setMessageFocused] = useState(false);
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState<"" | "Success!" | "Error">("");
+  const [submitting, setSubmitting] = useState(false);
+  const [values, setValues] = useState<FormValues>({ name: "", email: "", subject: "", message: "" });
+  const [errors, setErrors] = useState<FormErrors>({ name: "", email: "", subject: "", message: "" });
+  const [touched, setTouched] = useState<Set<string>>(new Set());
   const headingRef = useRef<HTMLDivElement>(null);
+
+  const setField = (field: keyof FormValues) => (v: string) => {
+    const next = { ...values, [field]: v };
+    setValues(next);
+    if (touched.has(field)) setErrors(validate(next));
+  };
+
+  const markTouched = (id: string) => {
+    setTouched((prev) => new Set(prev).add(id));
+    setErrors(validate(values));
+  };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const allTouched = new Set(["name", "email", "subject", "message"]);
+    setTouched(allTouched);
+    const currentErrors = validate(values);
+    setErrors(currentErrors);
+    if (Object.values(currentErrors).some(Boolean)) return;
+
+    setSubmitting(true);
     const formData = new FormData(event.target as HTMLFormElement);
     formData.append("access_key", "e5fae1a1-313b-4ad9-8c6a-0da3cf820b15");
 
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-    setResult(data.success ? "Success!" : "Error");
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      setResult(data.success ? "Success!" : "Error");
+    } catch {
+      setResult("Error");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   /* ── GSAP: staggered word clip-reveal on heading ─────────────────── */
@@ -344,24 +413,39 @@ export function Contact() {
                 label="Your Name"
                 type="text"
                 placeholder="Krishna Bapatla"
+                value={values.name}
+                onChange={setField("name")}
+                onTouched={markTouched}
                 focused={focused}
                 setFocused={setFocused}
+                error={errors.name}
+                touched={touched.has("name")}
               />
               <Field
                 id="email"
                 label="Email Address"
                 type="email"
                 placeholder="you@example.com"
+                value={values.email}
+                onChange={setField("email")}
+                onTouched={markTouched}
                 focused={focused}
                 setFocused={setFocused}
+                error={errors.email}
+                touched={touched.has("email")}
               />
               <Field
                 id="subject"
                 label="Subject"
                 type="text"
                 placeholder="Let's build something real"
+                value={values.subject}
+                onChange={setField("subject")}
+                onTouched={markTouched}
                 focused={focused}
                 setFocused={setFocused}
+                error={errors.subject}
+                touched={touched.has("subject")}
               />
 
               {/* Textarea — same underline treatment */}
@@ -378,22 +462,34 @@ export function Contact() {
                     name="message"
                     rows={4}
                     placeholder="Tell me about your project or opportunity..."
+                    value={values.message}
+                    onChange={(e) => setField("message")(e.target.value)}
                     onFocus={() => setMessageFocused(true)}
-                    onBlur={() => setMessageFocused(false)}
+                    onBlur={() => { setMessageFocused(false); markTouched("message"); }}
                     className="w-full resize-none border-0 bg-transparent pb-3 font-mono text-sm text-foreground placeholder-foreground/20 outline-none"
                   />
                   <div className="absolute bottom-0 left-0 h-px w-full bg-dark-blue-ui/60" />
                   <motion.div
                     className="absolute bottom-0 left-0 h-px"
-                    style={{ backgroundColor: "var(--color-blue)" }}
-                    animate={{ width: messageFocused ? "100%" : "0%" }}
+                    style={{ backgroundColor: touched.has("message") && errors.message ? "#ef4444" : "var(--color-blue)" }}
+                    animate={{ width: messageFocused || (touched.has("message") && !!errors.message) ? "100%" : "0%" }}
                     transition={{ duration: 0.35, ease: "easeOut" }}
                   />
                 </div>
+                {touched.has("message") && errors.message && (
+                  <motion.span
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="font-mono text-[9px] tracking-wide"
+                    style={{ color: "#ef4444bb" }}
+                  >
+                    {errors.message}
+                  </motion.span>
+                )}
               </div>
 
               {/* Submit */}
-              <div className="pt-2">
+              <div className="flex flex-col gap-4 pt-2">
                 <AnimatePresence mode="wait">
                   {result === "Success!" ? (
                     <motion.div
@@ -410,9 +506,10 @@ export function Contact() {
                     <motion.button
                       key="btn"
                       type="submit"
-                      className="group relative flex items-center gap-4 overflow-hidden bg-blue px-8 py-4 font-mono text-xs uppercase tracking-widest text-white transition-shadow duration-300 hover:shadow-[0_0_40px_rgba(0,122,229,0.3)]"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.97 }}
+                      disabled={submitting}
+                      className="group relative flex items-center gap-4 overflow-hidden bg-blue px-8 py-4 font-mono text-xs uppercase tracking-widest text-white transition-shadow duration-300 hover:shadow-[0_0_40px_rgba(0,122,229,0.3)] disabled:opacity-60 disabled:cursor-not-allowed"
+                      whileHover={submitting ? {} : { scale: 1.02 }}
+                      whileTap={submitting ? {} : { scale: 0.97 }}
                       style={{
                         clipPath:
                           "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
@@ -425,11 +522,22 @@ export function Contact() {
                         whileHover={{ x: "180%" }}
                         transition={{ duration: 0.55 }}
                       />
-                      Send Message
+                      {submitting ? "Sending…" : "Send Message"}
                       <Send className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </motion.button>
                   )}
                 </AnimatePresence>
+
+                {result === "Error" && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="font-mono text-[9px] tracking-wide"
+                    style={{ color: "#ef4444bb" }}
+                  >
+                    Something went wrong — please try again or email me directly.
+                  </motion.p>
+                )}
               </div>
             </form>
           </motion.div>
