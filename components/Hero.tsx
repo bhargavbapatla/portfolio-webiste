@@ -19,11 +19,13 @@ function MagneticButton({
   children,
   className,
   href,
+  download,
   style,
 }: {
   children: React.ReactNode;
   className?: string;
   href?: string;
+  download?: boolean | string;
   style?: React.CSSProperties;
 }) {
   const mouseX = useMotionValue(0);
@@ -34,6 +36,7 @@ function MagneticButton({
   return (
     <motion.a
       href={href}
+      download={download}
       onMouseMove={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         mouseX.set((e.clientX - rect.left - rect.width / 2) * 0.4);
@@ -687,7 +690,8 @@ export function Hero() {
             </MagneticButton>
 
             <MagneticButton
-              href="/resume.pdf"
+              href="/Krishnabhargav_Bapatla_Latest_Resume_March.pdf"
+              download="Krishnabhargav_Bapatla_Resume.pdf"
               className="group flex items-center gap-3 border border-dark-blue-ui/50 bg-white/5 backdrop-blur-md px-7 py-[14px] font-mono text-xs font-semibold uppercase tracking-widest text-foreground/70 transition-all duration-300 hover:border-blue hover:shadow-[0_0_20px_rgba(0,122,229,0.2)] hover:text-white"
               style={{
                 clipPath:
